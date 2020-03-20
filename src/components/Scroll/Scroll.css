@@ -1,0 +1,8 @@
+.scroll {
+    margin: 10px 0 10px 0;
+    overflow-y: scroll; 
+    border: none; 
+    height: 800px;
+    border-top: white 1px solid;
+    border-bottom: white 1px solid;
+}
