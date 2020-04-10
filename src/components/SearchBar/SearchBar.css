@@ -1,8 +1,10 @@
 .container { 
     margin-top: 50px;
     width: 500px;
+    padding: 0;
 }
 
 .input-group {
+    margin: auto 0;
     width: 500px;
 }

@@ -1,14 +1,15 @@
 import React from 'react';
 import VerbCard from '../VerbCard/VerbCard';
 
-const Cardlist = ({ filteredVerbs }) => {
+const Cardlist = ({ verbs }) => {
     return (
         <div>
             {
-                filteredVerbs.map((verb, i) => {
+                verbs.map((verb, i) => {
                     return (
                         <VerbCard key={i} 
-                            verb={filteredVerbs[i]}
+                            spanish={verbs[i].infinitive}
+                            english={verbs[i].infinitive_english}
                         />
                     );
                 })

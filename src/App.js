@@ -3,8 +3,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav'
 import SearchBar from './components/SearchBar/SearchBar'
 import Scroll from './components/Scroll/Scroll'
-import CardList from './components/CardList/CardList'
 import './App.css';
+import CardList from './components/CardList/CardList';
+import VerbCard from './components/VerbCard/VerbCard';
 
 class App extends React.Component {
   constructor() {
@@ -13,63 +14,43 @@ class App extends React.Component {
       searchfield: "",
       verbs: [],
       filteredVerbs: [],
-      data: null
+      data: null,
+      // verbEsp: "",
+      // verbEng: ""
     }
   }
 
-  componentDidMount() {
-    fetch('https://raw.githubusercontent.com/ian-hamlin/verb-data/master/json/spanish/index.json')
-    .then(response => response.json())
-    .then(data => {
-      Object.keys(data).forEach((key) => {
-        var idx = data[key].first
-        var joined = this.state.verbs.concat(idx)
-        this.setState({verbs: joined})
-      })
-      console.log(this.state.verbs)
-    })
-    // .then(data =>{
-    //     this.setState({verbs: data}, function () {
-    //       console.log(this.state.verbs)
-    //     })
-    // })
-    .catch(err => console.log(err))
-    // this.callBackendAPI()
-    // .then(res => this.setState({ data: res.express }))
-    // .catch(err => console.log(err));
-  }
-
-  // callBackendAPI = async () => {
-  //   const response = await fetch('http://localhost:5000/');
-  //   const body = await response.json();
-
-  //   if (response.status !== 200) {
-  //     throw Error(body.message)
-  //   }
-  //   return body;
-  // };
-
   changeOnSearch = (event) => {
-    this.setState({searchfield: event.target.value})
+    this.setState({searchfield: event.target.value});
   }
 
-  filterVerbs = () => {
-    let filtered = this.state.verbs.filter(verb => {
-      return ( 
-        verb.toLowerCase().includes(this.state.searchfield.toLowerCase())
-      )
-    })
-    this.setState({filteredVerbs: filtered}, () => {
-      console.log(this.state.filteredVerbs)
-    })
+  searchVerbs = () => {
+    if(this.state.searchfield !== "") {
+      fetch('http://localhost:5000/verbs', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          verb: this.state.searchfield
+        })
+      })
+      .then(response => response.json())
+      .then(data => this.setState({filteredVerbs: data}))
+      // .then(data => {
+      //   Object.keys(data).forEach((key =>{
+      //     var idxEsp = data[key].infinitive;
+      //     var idxEng = data[key].infinitive_english;
+      //     var joinedEsp = this.state.verbEsp.concat(idxEsp);
+      //     var joinedEng = this.state.verbEng.concat(idxEng);
+      //     this.setState({
+      //       verbEng: joinedEng,
+      //       verbEsp: joinedEsp
+      //     })
+      //   }))
+      //   console.log(this.state.verbEng+"\n"+this.state.verbEsp)
+      // })
+      .catch(err => console.log(err))
+    }
   }
-
-  // const {robots,searchfield} = this.state
-  //       const filteredRobots = robots.filter(robot => {
-  //           return (
-  //               robot.name.toLowerCase().includes(searchfield.toLowerCase())
-  //           )
-  //       });
   
   render() {
     return (
@@ -87,11 +68,20 @@ class App extends React.Component {
         </Navbar>
         <SearchBar 
           searchChange = {this.changeOnSearch}
-          filterVerbs = {this.filterVerbs}
+          // filterVerbs = {this.filterVerbs}
+          filterVerbs = {this.searchVerbs}
         />
-        <Scroll>
-          <CardList filteredVerbs = {this.state.filteredVerbs} />
-        </Scroll>
+        {
+          this.state.verbEsp === "" 
+          ? 
+          null
+          :
+          <Scroll>
+            <CardList
+              verbs={this.state.filteredVerbs}
+            />
+          </Scroll>
+        }
       </div>
     )
   }
