@@ -10,7 +10,7 @@ class Scroll extends React.Component {
 
     handleScroll = (e) => {
         let elmnt = e.target;
-        console.log(elmnt.scrollTop)
+        // console.log(elmnt.scrollTop)
     }
     render() {
         return (
