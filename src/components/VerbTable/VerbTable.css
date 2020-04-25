@@ -1,0 +1,8 @@
+.table {
+    font-size: 0.75em;
+    table-layout: fixed;
+}
+
+.card-subtitle, h6 {
+    text-align: left;
+}

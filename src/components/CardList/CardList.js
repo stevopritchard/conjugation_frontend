@@ -31,7 +31,7 @@ const Cardlist = ({ verbs, select }) => {
 //                             <VerbCard key={i} 
 //                                 spanish={verbs[i].infinitive}
 //                                 english={verbs[i].infinitive_english}
-//                                 select={select.bind(null,true,verbs[i].infinitive)}
+//                                 select={select.bind(select,true,verbs[i].infinitive)}
 //                             />
 //                         );
 //                     })

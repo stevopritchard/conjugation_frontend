@@ -8,8 +8,8 @@ import CardList from './components/CardList/CardList';
 import Conjugation from './components/Conjugation/Conjugation';
 
 class App extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       searchfield: "",
       verbs: [],
@@ -17,7 +17,13 @@ class App extends React.Component {
       data: null,
       verbSelected: false,
       infinitive: "",
-      gerund: ""
+      gerund: "",
+      past_participle: "",
+      indicative_present: [],
+      indicative_preterite: [],
+      indicative_imperfect: [],
+      indicative_conditional: [],
+      indicative_future: []
     };
     this.verbSelection = this.verbSelection.bind(this);
   }
@@ -44,27 +50,56 @@ class App extends React.Component {
 
   verbSelection = (selection, verb) => {
     this.setState({
-      verbSelected: selection, //can make this state toggle
+      verbSelected: selection, 
       infinitive: verb
-      },
-      console.log("Verb: "+verb+" and Selection: "+ selection+this.state.verbSelected)
-    )
+      }
+    );
     if(selection === true){
-      fetch('http://localhost:5000/gerund', {
-        method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          infinitive: verb
-        })
-      })
-      .then(response => response.json())
-      .then(data => this.setState({gerund: data}))
+      const tenses = [
+        'http://localhost:5000/gerund',
+        'http://localhost:5000/past_participle',
+        'http://localhost:5000/indicative_present',
+        'http://localhost:5000/indicative_preterite',
+        'http://localhost:5000/indicative_imperfect',
+        'http://localhost:5000/indicative_conditional',
+        'http://localhost:5000/indicative_future'
+      ]
+        Promise.all(tenses.map(function(tense) {
+          return fetch(tense, {
+              method: 'post',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                infinitive: verb
+              })
+            })
+            .then(response => Promise.resolve(response.json())) //Promise.resolve required to return map array
+          }))
+      .then(tenses => this.setState({
+        gerund: tenses[0],
+        past_participle: tenses[1],
+        indicative_present: tenses[2],
+        indicative_preterite: tenses[3],
+        indicative_imperfect: tenses[4],
+        indicative_conditional: tenses[5],
+        indicative_future: tenses[6]
+      }))
       .catch(err => console.log(err))
     }
   }
   
   render() {
-    const { route, filteredVerbs, verbSelected, infinitive, gerund } = this.state
+    const { route, 
+      filteredVerbs, 
+      verbSelected, 
+      infinitive, 
+      gerund, 
+      past_participle,
+      indicative_present,
+      indicative_preterite,
+      indicative_imperfect,
+      indicative_conditional,
+      indicative_future
+    } = this.state;
     return (
       <div className="App">
         <Navbar expand="lg">
@@ -88,6 +123,12 @@ class App extends React.Component {
           <Conjugation 
             infinitive={infinitive}
             gerund={gerund}
+            past_participle={past_participle}
+            indicative_present={indicative_present}
+            indicative_preterite={indicative_preterite}
+            indicative_imperfect={indicative_imperfect}
+            indicative_conditional={indicative_conditional}
+            indicative_future={indicative_future}
           />
           :
           <Scroll>
