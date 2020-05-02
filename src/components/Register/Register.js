@@ -1,31 +1,36 @@
 import React from 'react';
 import { Card, Form, Button, FormGroup } from 'react-bootstrap'
 
-class SignIn extends React.Component {
+class Register extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            signInEmail: "",
-            signInPassword: ""
+            registerEmail: "",
+            registerPassword: ""
         }
     }
 
+    onNameChange = (event) => {
+        this.setState({registerName: event.target.value})
+    }
+
     onEmailChange = (event) => {
-        this.setState({signInEmail: event.target.value})
+        this.setState({registerEmail: event.target.value})
     }
 
     onPasswordChange = (event) => {
-        this.setState({signInPassword: event.target.value})
+        this.setState({registerPassword: event.target.value})
     }
 
-    onSubmitSignIn = () => {
-        const { signInEmail, signInPassword } = this.state;
-        fetch('http://localhost:5000/signin', {
+    onSubmitRegister = () => {
+        const { registerName, registerEmail, registerPassword } = this.state;
+        fetch('http://localhost:5000/register', {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-              email: signInEmail,
-              password: signInPassword
+                name: registerName,
+                email: registerEmail,
+                password: registerPassword
             })
         })
         .then(response => response.json())
@@ -36,43 +41,44 @@ class SignIn extends React.Component {
         })
     }
 
-    render(){
-        const { routeChange } = this.props
+    render() {
+        
         return(
             <Card style={{ width: '25rem' ,margin: "0 auto"}}>
                 <Card.Body>
-                    <Card.Title>Sign In</Card.Title>
+                    <Card.Title>Register</Card.Title>
+                    <FormGroup>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter name"
+                            onChange={this.onNameChange}
+                        />
+                    </FormGroup>
                     <FormGroup>
                         <Form.Control
                             type="email"
                             placeholder="Enter email"
-                            onChange = {this.onEmailChange}
+                            onChange={this.onEmailChange}
                         />
                     </FormGroup>
                     <FormGroup>
                         <Form.Control
                             type="password"
                             placeholder="Enter password"
-                            onChange= {this.onPasswordChange}
+                            onChange={this.onPasswordChange}
                         />
                     </FormGroup>
                     <Button 
                         variant="primary" 
                         type="submit"
-                        onClick={this.onSubmitSignIn}
+                        onClick={this.onSubmitRegister}
                     >
-                        Submit
+                        Register
                     </Button>
-                    <Form.Text 
-                        onClick={() => routeChange("register")}
-                        style={{textDecoration: "underline", cursor: "pointer"}}
-                    >
-                    Register
-                    </Form.Text>
                 </Card.Body>
             </Card>
         )
     }
 }
 
-export default SignIn
+export default Register
