@@ -1,5 +1,7 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import VerbTable from '../VerbTable/VerbTable'
 
 const Conjugation = ({ 
@@ -16,8 +18,19 @@ const Conjugation = ({
     <Card style={{ width: '700px', margin: "20px"}}>
         <Card.Body>
             <Card.Title>{infinitive}</Card.Title>
-            <Card.Subtitle className="mb-2">Present Participle: {gerund.gerund} - {gerund.gerund_english}</Card.Subtitle>
-            <Card.Subtitle className="mb-2">Past Participle: {past_participle.pastparticiple} - {past_participle.pastparticiple_english}</Card.Subtitle>
+            <Row>
+                <Col>
+                    <Card.Subtitle 
+                        className="mb-2">Present Participle: {gerund.gerund} - {gerund.gerund_english}
+                    </Card.Subtitle>
+                    <Card.Subtitle 
+                        className="mb-2">Past Participle: {past_participle.pastparticiple} - {past_participle.pastparticiple_english}
+                    </Card.Subtitle>
+                </Col>
+                <Col>
+                    <i class="fas fa-star"></i>
+                </Col>
+            </Row>
             <VerbTable 
                 indicative_present={indicative_present}
                 indicative_preterite={indicative_preterite}
