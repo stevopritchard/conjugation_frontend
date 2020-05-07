@@ -37,7 +37,7 @@ class SignIn extends React.Component {
     }
 
     render(){
-        const { routeChange } = this.props
+        const { routeChange } = this.props;
         return(
             <Card style={{ width: '25rem' ,margin: "0 auto"}}>
                 <Card.Body>

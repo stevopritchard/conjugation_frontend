@@ -2,7 +2,7 @@ import React from 'react';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import Scroll from '../../components/Scroll/Scroll';
 import CardList from '../../components/CardList/CardList';
-import Conjugation from '../../components/Conjugation/Conjugation';
+import Conjugation from '../../components/Conjugation/Conjugation'; 
 
 const initialState = {
     searchfield: "",
@@ -21,8 +21,8 @@ const initialState = {
   }
 
   class Reference extends React.Component {
-    constructor() {
-      super()
+    constructor(props) {
+      super(props)
       this.state = {
         // initialState,
         searchfield: "",
@@ -38,7 +38,7 @@ const initialState = {
         indicative_imperfect: [],
         indicative_conditional: [],
         indicative_future: [],
-        route: "signin",
+        isFavourite: false,
       };
       this.verbSelection = this.verbSelection.bind(this);
     }
@@ -62,13 +62,22 @@ const initialState = {
         .catch(err => console.log(err))
       }
     }
-  
+
+    checkFavourite = (verb) => {
+      return verb === this.state.infinitive
+    };
+
     verbSelection = (selection, verb) => {
       this.setState({
         verbSelected: selection, 
         infinitive: verb
         }
       );
+      if(this.props.favourites.some(this.checkFavourite) === true) { //NOTE: destructuring 'this.props.favourites' returned 'undefined'
+        this.setState({isFavourite: true})
+      } else {
+        this.setState({isFavourite: false})
+      }
       if(selection === true){
         const tenses = [
           'http://localhost:5000/gerund',
@@ -99,12 +108,25 @@ const initialState = {
           indicative_future: tenses[6]
         }))
         .catch(err => console.log(err))
+
       }
+    }
+
+    addFavourite = (verb) => {
+      fetch('http://localhost:5000/add_favourite', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          infinitive: verb,
+          id: this.props.id
+        })
+      })
+      .then(response => response.json())
+      .then(response => console.log(response))
     }
     
     render() {
       const { 
-        route, 
         filteredVerbs, 
         verbSelected, 
         infinitive, 
@@ -116,6 +138,11 @@ const initialState = {
         indicative_conditional,
         indicative_future
       } = this.state;
+      const { id, favourites } = this.props;
+      // console.log(this.props.favourites);
+      // console.log(this.state.infinitive);
+      console.log(this.props.favourites.some(this.checkFavourite));
+      console.log(this.state.isFavourite)
       return (
         <div>
             <SearchBar 
@@ -134,6 +161,9 @@ const initialState = {
                 indicative_imperfect={indicative_imperfect}
                 indicative_conditional={indicative_conditional}
                 indicative_future={indicative_future}
+                addFavourite={this.addFavourite}
+                id={id}
+                isFavourite={this.isFavourite}
               />
               :
               <Scroll>

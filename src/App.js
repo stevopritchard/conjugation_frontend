@@ -43,18 +43,23 @@ class App extends React.Component {
         joined: user.joined
       }
     })
+    console.log(this.state.user.favourites)
   }
 
   render() {
     const { 
       route, 
     } = this.state;
+    console.log(this.state.user.id)
     return (
       <div className="App">
         <Navigation isSignedIn={this.state.signedIn} routeChange={this.onRouteChange}/>
         { route === 'home'
           ?
-          <Reference/>
+          <Reference 
+            id={this.state.user.id}
+            favourites={this.state.user.favourites}
+          />
           : 
           ( route ==='signin' 
             ?
