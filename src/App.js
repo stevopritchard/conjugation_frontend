@@ -23,6 +23,25 @@ class App extends React.Component {
     };
   }
 
+  // componentDidUpdate(prevProps, prevState) {
+    // if(this.state.user.id !== prevState.user.id) {
+    //   fetch('http://localhost:5000/check_favourite', {
+    //     method: 'post',
+    //     headers: {'Content-Type': 'application/json'},
+    //     body: JSON.stringify({
+    //     id: prevState.user.id
+    //     })
+    //   })
+    //   .then(response => response.json())
+    //   .then(favourites => {
+    //       this.setState({user: {
+    //         favourites: favourites
+    //         }
+    //       })
+      // })
+    // }
+  // }
+
   onRouteChange = ( route ) => {
       
     this.setState({route: route})
@@ -43,12 +62,11 @@ class App extends React.Component {
         joined: user.joined
       }
     })
-    console.log(this.state.user.favourites)
   }
 
   render() {
     const { 
-      route, 
+      route 
     } = this.state;
     console.log(this.state.user.id)
     return (

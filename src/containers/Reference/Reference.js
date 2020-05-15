@@ -37,8 +37,7 @@ const initialState = {
         indicative_preterite: [],
         indicative_imperfect: [],
         indicative_conditional: [],
-        indicative_future: [],
-        isFavourite: false,
+        indicative_future: []
       };
       this.verbSelection = this.verbSelection.bind(this);
     }
@@ -63,21 +62,17 @@ const initialState = {
       }
     }
 
-    checkFavourite = (verb) => {
-      return verb === this.state.infinitive
-    };
-
     verbSelection = (selection, verb) => {
       this.setState({
         verbSelected: selection, 
         infinitive: verb
         }
       );
-      if(this.props.favourites.some(this.checkFavourite) === true) { //NOTE: destructuring 'this.props.favourites' returned 'undefined'
-        this.setState({isFavourite: true})
-      } else {
-        this.setState({isFavourite: false})
-      }
+      // if(this.props.favourites.some(this.checkFavourite) === true) { //NOTE: destructuring 'this.props.favourites' returned 'undefined'
+      //   this.setState({isFavourite: true})
+      // } else {
+      //   this.setState({isFavourite: false})
+      // }
       if(selection === true){
         const tenses = [
           'http://localhost:5000/gerund',
@@ -112,19 +107,32 @@ const initialState = {
       }
     }
 
-    addFavourite = (verb) => {
+    addFavourite = (verb, id) => {
       fetch('http://localhost:5000/add_favourite', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
           infinitive: verb,
-          id: this.props.id
+          id: id
         })
       })
       .then(response => response.json())
       .then(response => console.log(response))
     }
-    
+    //above function needs to update the state of user.favourites in app.js somehow
+    removeFavourite = (verb, id) => {
+      fetch('http://localhost:5000/remove_favourite', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          infinitive: verb,
+          id: id
+        })
+      })
+      .then(response => response.json())
+      .then(response => console.log(response))
+    }
+
     render() {
       const { 
         filteredVerbs, 
@@ -139,10 +147,6 @@ const initialState = {
         indicative_future
       } = this.state;
       const { id, favourites } = this.props;
-      // console.log(this.props.favourites);
-      // console.log(this.state.infinitive);
-      console.log(this.props.favourites.some(this.checkFavourite));
-      console.log(this.state.isFavourite)
       return (
         <div>
             <SearchBar 
@@ -162,7 +166,9 @@ const initialState = {
                 indicative_conditional={indicative_conditional}
                 indicative_future={indicative_future}
                 addFavourite={this.addFavourite}
+                removeFavourite={this.removeFavourite}
                 id={id}
+                favourites={favourites}
                 isFavourite={this.isFavourite}
               />
               :
