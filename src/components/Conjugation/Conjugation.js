@@ -33,7 +33,7 @@ class Conjugation extends React.Component {
     }
 
     checkFavourites = (verb) => {
-        return this.props.infinitive == verb
+        return this.props.infinitive === verb
     }
 
     makeFavourite = (verb, id) => {

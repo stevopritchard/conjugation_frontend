@@ -21,8 +21,8 @@ const initialState = {
   }
 
   class Reference extends React.Component {
-    constructor(props) {
-      super(props)
+    constructor() {
+      super()
       this.state = {
         // initialState,
         searchfield: "",
@@ -41,6 +41,33 @@ const initialState = {
       };
       this.verbSelection = this.verbSelection.bind(this);
     }
+
+    async componentDidMount() {
+      this.setState({verbSelected: false})
+      if(this.props.favourites !== null) {
+        this.listFavourites()
+      }
+    }
+
+    async listFavourites() {
+      let favArray = [];
+      try {
+        await Promise.all(this.props.favourites.map(async function (favourite) {
+          const response = await fetch('http://localhost:5000/favourite_verbs', {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+            infinitive: favourite
+            })
+          })
+          const verb = await response.json()
+          favArray.push(verb)
+        }))
+        this.setState({filteredVerbs: favArray})
+      } catch(err) {
+        console.log(err)
+      }
+    }
   
     changeOnSearch = (event) => {
       this.setState({searchfield: event.target.value.toLowerCase()});
@@ -53,7 +80,7 @@ const initialState = {
           method: 'post',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
-            verb: this.state.searchfield
+            infinitive: this.state.searchfield
           })
         })
         .then(response => response.json())
@@ -119,7 +146,7 @@ const initialState = {
       .then(response => response.json())
       .then(response => console.log(response))
     }
-    //above function needs to update the state of user.favourites in app.js somehow
+    
     removeFavourite = (verb, id) => {
       fetch('http://localhost:5000/remove_favourite', {
         method: 'post',
@@ -173,10 +200,10 @@ const initialState = {
               />
               :
               <Scroll>
-                <CardList
-                  verbs={filteredVerbs}
-                  select={this.verbSelection}
-                />
+                  <CardList
+                    verbs={filteredVerbs}
+                    select={this.verbSelection}
+                  />
               </Scroll>
             }
         </div>
