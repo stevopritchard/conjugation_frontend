@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 
-const Navigation = ({ routeChange, isSignedIn }) => {
+const Navigation = ({ modeChange, routeChange, isSignedIn }) => {
     return(
         <Navbar expand="lg">
           <Navbar.Brand>
@@ -13,6 +13,8 @@ const Navigation = ({ routeChange, isSignedIn }) => {
           {isSignedIn 
             ?
             <Nav className="ml-auto">
+              <Nav.Link onClick={() => modeChange("reference")}>Reference</Nav.Link>
+              <Nav.Link onClick={() => modeChange("practise")}>Practise</Nav.Link>
               <Nav.Link onClick={() => routeChange("signin")}>Sign Out</Nav.Link>
             </Nav>
             :

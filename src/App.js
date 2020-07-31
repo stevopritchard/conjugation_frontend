@@ -1,6 +1,7 @@
 import React from 'react';
-import Reference from './containers/Reference/Reference';
-import Navigation from './components/Navigation/Navigation';
+import Header from './components/Header/Header';
+import Reference from './containers/Reference/Reference'
+import Practise from './containers/Practise/Practise'
 import SignIn from './components/SignIn/SignIn';
 import Register from './components/Register/Register';
 import './App.css';
@@ -13,6 +14,7 @@ class App extends React.Component {
     this.state = {
       route: "signin",
       signedIn: false,
+      mode: 'reference',
       user: {
         id: '',
         name: '',
@@ -33,6 +35,10 @@ class App extends React.Component {
     }
   }
 
+  onModeChange = (mode) => {
+    this.setState({mode: mode})
+  }
+
   loadUser = (user) => {
     this.setState({
       user: {
@@ -47,17 +53,27 @@ class App extends React.Component {
 
   render() {
     const { 
-      route 
+      route,
+      mode
     } = this.state;
     return (
       <div className="App">
-        <Navigation isSignedIn={this.state.signedIn} routeChange={this.onRouteChange}/>
+        <Header 
+          isSignedIn={this.state.signedIn} 
+          routeChange={this.onRouteChange}
+          modeChange={this.onModeChange}
+        />
         { route === 'home'
           ?
-          <Reference 
-            id={this.state.user.id}
-            favourites={this.state.user.favourites}
-          />
+          ( mode === 'reference'
+            ?
+            <Reference
+              id={this.state.user.id}
+              favourites={this.state.user.favourites}
+            />
+            :
+            <Practise />
+          )
           : 
           ( route ==='signin' 
             ?
