@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Form, Button, FormGroup } from 'react-bootstrap'
+import Userform from '../Userform/Userform'
 
 class Register extends React.Component {
     constructor(props) {
@@ -7,7 +7,8 @@ class Register extends React.Component {
         this.state = {
             registerName: "",
             registerEmail: "",
-            registerPassword: ""
+            registerPassword: "",
+            responseText: ""
         }
     }
 
@@ -25,6 +26,9 @@ class Register extends React.Component {
 
     onSubmitRegister = () => {
         const { registerName, registerEmail, registerPassword } = this.state;
+        if(registerName === "" || registerEmail === "" || registerPassword || ""){
+            this.setState({responseText: "Please fill in all fields"})
+        }
         fetch('http://localhost:5000/register', {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
@@ -45,39 +49,33 @@ class Register extends React.Component {
     render() {
         
         return(
-            <Card style={{ width: '25rem' ,margin: "0 auto"}}>
-                <Card.Body>
-                    <Card.Title>Register</Card.Title>
-                    <FormGroup>
-                        <Form.Control
-                            type="text"
-                            placeholder="Enter name"
-                            onChange={this.onNameChange}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Form.Control
-                            type="email"
-                            placeholder="Enter email"
-                            onChange={this.onEmailChange}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Form.Control
-                            type="password"
-                            placeholder="Enter password"
-                            onChange={this.onPasswordChange}
-                        />
-                    </FormGroup>
-                    <Button 
-                        variant="primary" 
-                        type="submit"
-                        onClick={this.onSubmitRegister}
-                    >
-                        Register
-                    </Button>
-                </Card.Body>
-            </Card>
+
+            <Userform 
+                cardTitle = {"Sign Up"}
+                formGroup = {[
+                    {
+                        type: "email",
+                        placeholder: "Enter name",
+                        onChange: this.onNameChange
+                    },
+                    {
+                        controlId: "formBasicEmail",
+                        type: "email",
+                        placeholder: "Enter email",
+                        onChange: this.onEmailChange
+                    },
+                    {
+                        controlId: "formBasicPassword",
+                        type: "password",
+                        placeholder: "Password",
+                        onChange: this.onPasswordChange
+
+                    }
+                ]}
+                responseText = {this.state.responseText}
+                onSubmitFunction = {this.onSubmitRegister}
+                buttonTitle = {"Register"}
+            />
         )
     }
 }
