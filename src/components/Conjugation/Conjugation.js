@@ -52,22 +52,10 @@ class Conjugation extends React.Component {
             gerund, 
             past_participle,
             indicative_present,
-            indicative_presentperfect,
             indicative_preterite,
             indicative_imperfect,
-            indicative_pastperfect,
             indicative_conditional,
-            indicative_conditionalperfect,
             indicative_future,
-            indicative_futureperfect,
-            imperative_affirmative,
-            imperative_negative,
-            subjunctive_present,
-            subjunctive_presentperfect,
-            subjunctive_pastperfect,
-            subjunctive_imperfect,
-            subjunctive_future,
-            subjunctive_futureperfect,
             id
         } = this.props;
     
@@ -79,7 +67,7 @@ class Conjugation extends React.Component {
         const { starStyle } = styles;
     
         return (
-            <Card style={{ width: '100vw', margin: "20px"}}>
+            <Card style={{ width: '700px', margin: "20px"}}>
                 <Card.Body>
                     <Card.Title>{infinitive}</Card.Title>
                     <Row>
@@ -97,22 +85,10 @@ class Conjugation extends React.Component {
                     </Row>
                     <VerbTable 
                         indicative_present={indicative_present}
-                        indicative_presentperfect={indicative_presentperfect}
                         indicative_preterite={indicative_preterite}
                         indicative_imperfect={indicative_imperfect}
-                        indicative_pastperfect={indicative_pastperfect}
                         indicative_conditional={indicative_conditional}
-                        indicative_conditionalperfect={indicative_conditionalperfect}
                         indicative_future={indicative_future}
-                        indicative_futureperfect={indicative_futureperfect}
-                        imperative_affirmative={imperative_affirmative}
-                        imperative_negative={imperative_negative}
-                        subjunctive_present={subjunctive_present}
-                        subjunctive_presentperfect={subjunctive_presentperfect}
-                        subjunctive_pastperfect={subjunctive_pastperfect}
-                        subjunctive_imperfect={subjunctive_imperfect}
-                        subjunctive_future={subjunctive_future}
-                        subjunctive_futureperfect={subjunctive_futureperfect}
                     />
                 </Card.Body>
             </Card>

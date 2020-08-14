@@ -1,9 +1,0 @@
-.row{
-    justify-content: center;
-}
-
-.row > .btn{
-    /* padding: 0; */
-    width: 70px;
-    margin: 0 10px 10px 10px;
-}

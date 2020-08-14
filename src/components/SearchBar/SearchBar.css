@@ -2,10 +2,9 @@
     margin-top: 50px;
     width: 500px;
     padding: 0;
-    display: flex;
-    justify-content: center;
 }
 
 .input-group {
-    width: 75vw;
+    margin: auto 0;
+    width: 500px;
 }
