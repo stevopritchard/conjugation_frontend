@@ -1,7 +1,12 @@
+
 .table {
     font-size: 0.75em;
-    table-layout: fixed;
+    table-layout: auto;
+    overflow-x: scroll;
+    display: block;
 }
+
+
 
 .card-subtitle, h6 {
     text-align: left;

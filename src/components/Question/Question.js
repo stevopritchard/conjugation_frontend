@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import './Question.css'
 
-const Question = ({ questionNumber, nextQuestion, quit, conjugation, score }) => {
+const Question = ({ questionNumber, nextQuestion, quit, conjugation, score, randNum }) => {
     const pronouns = {
         'form_1s':'Yo', 
         'form_2s':'Tú', 
@@ -17,7 +17,7 @@ const Question = ({ questionNumber, nextQuestion, quit, conjugation, score }) =>
     }
     var buttons = document.getElementsByTagName('input') 
     var forms = Object.keys(conjugation);
-    var correctForm = forms[1+(Math.floor(Math.random()*(forms.length-1)))]
+    var correctForm = forms[1+(randNum)]
     var correctPronoun = pronouns[correctForm];
     var answer = 0;
     const checked = (e)=> {

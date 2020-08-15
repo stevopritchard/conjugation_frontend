@@ -19,6 +19,7 @@ class Practise extends React.Component {
             score: 0,
             testCounter: 0
         };
+        this.randNum = Math.floor(Math.random()*(5))
     }
 
     getVerbs() {
@@ -76,7 +77,7 @@ class Practise extends React.Component {
                 this.getVerbs()
             } else {
                 this.startTest(false)
-                this.setState({selectedTenses:[]},function(){console.log(this.state.selectedTenses)})
+                this.setState({selectedTenses:[]})
             }
     }
 
@@ -99,6 +100,7 @@ class Practise extends React.Component {
                     nextQuestion={this.nextQuestion}
                     conjugation={conjugation}
                     score={score}
+                    randNum={this.randNum}
                 />
                 :
                 <Card>

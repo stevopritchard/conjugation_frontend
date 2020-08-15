@@ -22,12 +22,12 @@ const VerbTable = ({
     subjunctive_futureperfect
 }) => {
     return (
-        <div>
+        <div className='verbContainer'>
         <h6>Indicative</h6>
         <Table size="sm">
             <thead>
                 <tr>
-                    <th style={{width: "100px"}}></th>
+                    <th></th>
                     <th>Present</th>
                     <th>Present Perfect</th>
                     <th>Preterite</th>
@@ -118,7 +118,7 @@ const VerbTable = ({
         <Table>
             <thead>
                 <tr>
-                    <th style={{width: "100px"}}></th>
+                    <th></th>
                     <th>Imperative Affimative</th>
                     <th>Imperative Negative</th>
                 </tr>
@@ -160,7 +160,7 @@ const VerbTable = ({
         <Table size="sm">
             <thead>
                 <tr>
-                    <th style={{width: "100px"}}></th>
+                    <th></th>
                     <th>Present</th>
                     <th>Present Perfect</th>
                     <th>Imperfect</th>

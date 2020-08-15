@@ -1,0 +1,4 @@
+.conjugation{
+    overflow-y: scroll; 
+    max-height: calc(100vh - 200px);
+}

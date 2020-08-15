@@ -3,6 +3,7 @@ import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import VerbTable from '../VerbTable/VerbTable'
+import './Conjugation.css'
 
 class Conjugation extends React.Component {
     constructor(props){
@@ -79,11 +80,11 @@ class Conjugation extends React.Component {
         const { starStyle } = styles;
     
         return (
-            <Card style={{ width: '100vw', margin: "20px"}}>
+            <Card className='conjugation' style={{ width: '100vw', margin: "20px"}}>
                 <Card.Body>
                     <Card.Title>{infinitive}</Card.Title>
                     <Row>
-                        <Col>
+                        <Col xs={11} sm={11} md={11} xl={11} lg={11}>
                             <Card.Subtitle 
                                 className="mb-2">Present Participle: {gerund.gerund} - {gerund.gerund_english}
                             </Card.Subtitle>
@@ -91,7 +92,7 @@ class Conjugation extends React.Component {
                                 className="mb-2">Past Participle: {past_participle.pastparticiple} - {past_participle.pastparticiple_english}
                             </Card.Subtitle>
                         </Col>
-                        <Col>
+                        <Col xs={1} sm={1} md={1} xl={1} lg={1}>
                             <i className="fas fa-star" style={starStyle} onClick={() => this.makeFavourite(infinitive, id)}></i>
                         </Col>
                     </Row>
