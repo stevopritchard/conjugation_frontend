@@ -25,7 +25,7 @@ class Userform extends React.Component {
             buttonTitle 
         } = this.props
         return(
-            <Card style={{ width: '25rem' ,margin: "0 auto"}}>
+            <Card style={{ margin: "0 auto"}}>
                 <Card.Body>
                     <Card.Title>{cardTitle}</Card.Title>
                         {

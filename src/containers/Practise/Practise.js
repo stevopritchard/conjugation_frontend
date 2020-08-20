@@ -103,7 +103,7 @@ class Practise extends React.Component {
                     randNum={this.randNum}
                 />
                 :
-                <Card>
+                <Card className='practiseCard'>
                     <Card.Body>
                         <Card.Title>
                             Practise

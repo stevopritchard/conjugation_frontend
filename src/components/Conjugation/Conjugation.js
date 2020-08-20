@@ -80,7 +80,7 @@ class Conjugation extends React.Component {
         const { starStyle } = styles;
     
         return (
-            <Card className='conjugation' style={{ width: '100vw', margin: "20px"}}>
+            <Card className='conjugation'>
                 <Card.Body>
                     <Card.Title>{infinitive}</Card.Title>
                     <Row>

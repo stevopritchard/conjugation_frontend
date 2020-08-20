@@ -1,4 +1,7 @@
 .conjugation{
     overflow-y: scroll; 
     max-height: calc(100vh - 200px);
+    margin: 0 auto; 
+    max-width: calc(100vw - 50px);
+    margin-top: 20px
 }
