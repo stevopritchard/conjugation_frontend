@@ -4,7 +4,6 @@ import Reference from './containers/Reference/Reference'
 import Practise from './containers/Practise/Practise'
 import SignIn from './components/SignIn/SignIn';
 import Register from './components/Register/Register';
-import { Route } from 'react-router-dom'
 import './App.css';
 
 
@@ -69,12 +68,12 @@ class App extends React.Component {
           ?
           ( mode === 'reference'
             ?
-            <Route path="/" exact component={Reference}
+            <Reference
               id={this.state.user.id}
               favourites={this.state.user.favourites}
             />
             :
-            <Route path="/practise" component={Practise} />
+            <Practise />
           )
           : 
           ( route ==='signin' 

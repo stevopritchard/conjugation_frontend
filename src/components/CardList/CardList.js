@@ -1,10 +1,11 @@
 import React from 'react';
 import VerbCard from '../VerbCard/VerbCard';
+import './CardList.css'
 
 
 const Cardlist = ({ verbs, select }) => {
     return (
-        <div>
+        <div className="cardList">
             {
                 verbs.map((verb, i) => {
                     return (

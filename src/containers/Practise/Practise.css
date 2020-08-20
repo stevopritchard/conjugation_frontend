@@ -1,13 +1,15 @@
 .card{
+    margin: 0 auto;
     margin-top: 50px;
-    width: 500px
+    max-width: 650px;
 }
-.row{
-    justify-content: space-evenly;
-}
-.form-control-range{
-    width: 300px;
 
+.form-check{
+    display: flex;
+}
+
+.form-control-range{
+    margin: 0 auto;
 }
 
 .btn{
