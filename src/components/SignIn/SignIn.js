@@ -1,13 +1,12 @@
 import React from 'react';
-import Userform from '../Userform/Userform'
+import { Card, Form, Button, FormGroup } from 'react-bootstrap'
 
 class SignIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             signInEmail: "",
-            signInPassword: "",
-            responseText: ""
+            signInPassword: ""
         }
     }
 
@@ -40,27 +39,38 @@ class SignIn extends React.Component {
     render(){
         const { routeChange } = this.props;
         return(
-            <Userform 
-                cardTitle = {"Sign In"}
-                formGroup = {[
-                    {
-                        controlId: "formBasicEmail",
-                        type: "email",
-                        placeholder: "Enter email",
-                        onChange: this.onEmailChange
-                    },
-                    {
-                        controlId: "formBasicPassword",
-                        type: "password",
-                        placeholder: "Password",
-                        onChange: this.onPasswordChange
-
-                    }
-                ]}
-                onSubmitFunction = {this.onSubmitSignIn}
-                buttonTitle = {"Sign In"}
-                routeChangeFunction = {routeChange}
-            />
+            <Card style={{ width: '25rem' ,margin: "0 auto"}}>
+                <Card.Body>
+                    <Card.Title>Sign In</Card.Title>
+                    <FormGroup>
+                        <Form.Control
+                            type="email"
+                            placeholder="Enter email"
+                            onChange = {this.onEmailChange}
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Form.Control
+                            type="password"
+                            placeholder="Enter password"
+                            onChange= {this.onPasswordChange}
+                        />
+                    </FormGroup>
+                    <Button 
+                        variant="primary" 
+                        type="submit"
+                        onClick={this.onSubmitSignIn}
+                    >
+                        Submit
+                    </Button>
+                    <Form.Text 
+                        onClick={() => routeChange("register")}
+                        style={{textDecoration: "underline", cursor: "pointer"}}
+                    >
+                    Register
+                    </Form.Text>
+                </Card.Body>
+            </Card>
         )
     }
 }

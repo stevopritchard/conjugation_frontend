@@ -1,7 +1,8 @@
 import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import './Header.css'
+import { Router, NavLink } from 'react-router-dom';
+import './Header.css';
 
 const Navigation = ({ modeChange, routeChange, isSignedIn }) => {
     return(
@@ -14,16 +15,22 @@ const Navigation = ({ modeChange, routeChange, isSignedIn }) => {
             ?
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
-                <Nav.Link onClick={() => modeChange("reference")}>Reference</Nav.Link>
-                <Nav.Link onClick={() => modeChange("practise")}>Practise</Nav.Link>
-                <Nav.Link onClick={() => routeChange("signin")}>Sign Out</Nav.Link>
+                <Router>
+                <NavLink onClick={() => modeChange("reference")}>Reference</NavLink>
+                <NavLink onClick={() => modeChange("practise")}>Practise</NavLink>
+                <NavLink onClick={() => routeChange("signin")}>Sign Out</NavLink>
+
+                </Router>
               </Nav>
             </Navbar.Collapse>
             :
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ml-auto">
-                <Nav.Link onClick={() => routeChange("signin")}>Sign In</Nav.Link>
-                <Nav.Link onClick={() => routeChange("register")}>Register</Nav.Link>
+                <Router>
+                <NavLink onClick={() => routeChange("signin")}>Sign In</NavLink>
+                <NavLink onClick={() => routeChange("register")}>Register</NavLink>
+
+                </Router>
               </Nav>
             </Navbar.Collapse>
           }
