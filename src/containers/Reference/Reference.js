@@ -185,7 +185,6 @@ import './Reference.css'
         })
       })
       .then(response => response.json())
-      .then(response => console.log(response))
     }
     
     removeFavourite = (verb, id) => {
@@ -198,7 +197,6 @@ import './Reference.css'
         })
       })
       .then(response => response.json())
-      .then(response => console.log(response))
     }
 
     render() {

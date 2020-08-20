@@ -60,7 +60,7 @@ class Practise extends React.Component {
             this.setState({selectedTenses: this.state.selectedTenses.concat(e.target.id)})
         } else if(e.target.checked === false) {
             this.setState({selectedTenses: this.state.selectedTenses.filter((item) => item !== e.target.id)
-                }, function() {console.log(this.state.selectedTenses)}
+                }
             )
         }
     }
@@ -70,7 +70,7 @@ class Practise extends React.Component {
     }
 
     nextQuestion = (answer) => {
-            this.setState({score: this.state.score+answer}, function(){console.log(this.state.score)})
+            this.setState({score: this.state.score+answer})
             const {currentQuestion, totalQuestions} = this.state
             if(currentQuestion < totalQuestions) {
                 this.setState({currentQuestion: this.state.currentQuestion+1})
