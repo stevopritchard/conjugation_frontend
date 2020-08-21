@@ -1,12 +1,10 @@
 import React from 'react';
 import Header from './components/Header/Header';
-import Reference from './containers/Reference/Reference'
-import Practise from './containers/Practise/Practise'
-import SignIn from './components/SignIn/SignIn';
-import Register from './components/Register/Register';
+import {Reference} from './containers/Reference';
+import {Practise} from './containers/Practise';
+import {SignIn} from './components/SignIn';
+import {Register} from './components/Register';
 import './App.css';
-
-
 
 class App extends React.Component {
   constructor() {
@@ -92,6 +90,6 @@ class App extends React.Component {
       </div>
     )
   }
-}
+};
 
 export default App;

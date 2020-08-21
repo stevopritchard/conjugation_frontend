@@ -15,6 +15,7 @@ class Practise extends React.Component {
             selectedTenses: [],
             currentQuestion: 1,
             totalQuestions: 6,
+            prevTotalQuestions: 0,
             conjugation: {},
             score: 0,
             testCounter: 0
@@ -37,7 +38,7 @@ class Practise extends React.Component {
     }
 
     startTest = (selection) => { //this is a function expression... function declaration didn't work!
-        let checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+        // let checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
         if(this.state.selectedTenses.length > 0) {
             if(selection === true) { this.setState({ score: 0 })}
             this.setState({ 
@@ -48,8 +49,9 @@ class Practise extends React.Component {
             this.getVerbs()
         }
         if(selection === false) { 
+            this.setState({ prevTotalQuestions: this.state.totalQuestions })
             if(this.state.currentQuestion < this.state.totalQuestions){
-                this.setState({ score: 0 })
+                this.setState({ score: 0})
             }
             this.setState({ selectedTenses: [] })
         }
@@ -85,6 +87,7 @@ class Practise extends React.Component {
         const {
             testActive, 
             totalQuestions,
+            prevTotalQuestions,
             currentQuestion,
             conjugation,
             score,
@@ -113,7 +116,7 @@ class Practise extends React.Component {
                             ?
                             null
                             :
-                            <p>Your score is {score} out of {totalQuestions}</p>
+                            <p>Your score is {score} out of {prevTotalQuestions}</p>
                         }
                         <Form.Group>
                             <div className="checkboxes">

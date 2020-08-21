@@ -1,5 +1,5 @@
 import React from 'react';
-import Userform from '../Userform/Userform'
+import {Userform} from '../Userform'
 
 class Register extends React.Component {
     constructor(props) {
