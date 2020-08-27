@@ -14,7 +14,7 @@ class Conjugation extends React.Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:5000/check_favourite', {
+        fetch('https://rocky-citadel-06291.herokuapp.com/check_favourite', {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
