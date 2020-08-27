@@ -49,7 +49,7 @@ class Reference extends React.Component {
     let favArray = [];
     try {
       await Promise.all(this.props.favourites.map(async function (favourite) {
-        const response = await fetch('http://localhost:5000/favourite_verbs', {
+        const response = await fetch('https://rocky-citadel-06291.herokuapp.com/favourite_verbs', {
           method: 'post',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -72,7 +72,7 @@ class Reference extends React.Component {
   searchVerbs = () => {
     this.setState({verbSelected: false})
     if(this.state.searchfield !== "") {
-      fetch('http://localhost:5000/infinitive', {
+      fetch('https://rocky-citadel-06291.herokuapp.com/infinitive', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -98,25 +98,25 @@ class Reference extends React.Component {
     // }
     if(selection === true){
       const tenses = [
-        'http://localhost:5000/gerund',
-        'http://localhost:5000/past_participle',
-        'http://localhost:5000/indicative_present',
-        'http://localhost:5000/indicative_presentperfect',
-        'http://localhost:5000/indicative_preterite',
-        'http://localhost:5000/indicative_imperfect',
-        'http://localhost:5000/indicative_pastperfect',
-        'http://localhost:5000/indicative_conditional',
-        'http://localhost:5000/indicative_conditionalperfect',
-        'http://localhost:5000/indicative_future',
-        'http://localhost:5000/indicative_futureperfect',
-        'http://localhost:5000/imperative_affirmative',
-        'http://localhost:5000/imperative_negative',
-        'http://localhost:5000/subjunctive_present',
-        'http://localhost:5000/subjunctive_presentperfect',
-        'http://localhost:5000/subjunctive_pastperfect',
-        'http://localhost:5000/subjunctive_imperfect',
-        'http://localhost:5000/subjunctive_future',
-        'http://localhost:5000/subjunctive_futureperfect',
+        'https://rocky-citadel-06291.herokuapp.com/gerund',
+        'https://rocky-citadel-06291.herokuapp.com/past_participle',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_present',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_presentperfect',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_preterite',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_imperfect',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_pastperfect',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_conditional',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_conditionalperfect',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_future',
+        'https://rocky-citadel-06291.herokuapp.com/indicative_futureperfect',
+        'https://rocky-citadel-06291.herokuapp.com/imperative_affirmative',
+        'https://rocky-citadel-06291.herokuapp.com/imperative_negative',
+        'https://rocky-citadel-06291.herokuapp.com/subjunctive_present',
+        'https://rocky-citadel-06291.herokuapp.com/subjunctive_presentperfect',
+        'https://rocky-citadel-06291.herokuapp.com/subjunctive_pastperfect',
+        'https://rocky-citadel-06291.herokuapp.com/subjunctive_imperfect',
+        'https://rocky-citadel-06291.herokuapp.com/subjunctive_future',
+        'https://rocky-citadel-06291.herokuapp.com/subjunctive_futureperfect',
       ]
         Promise.all(tenses.map(function(tense) {
           return fetch(tense, {
@@ -155,7 +155,7 @@ class Reference extends React.Component {
   }
 
   addFavourite = (verb, id) => {
-    fetch('http://localhost:5000/add_favourite', {
+    fetch('https://rocky-citadel-06291.herokuapp.com/add_favourite', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -168,7 +168,7 @@ class Reference extends React.Component {
   }
   
   removeFavourite = (verb, id) => {
-    fetch('http://localhost:5000/remove_favourite', {
+    fetch('https://rocky-citadel-06291.herokuapp.com/remove_favourite', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

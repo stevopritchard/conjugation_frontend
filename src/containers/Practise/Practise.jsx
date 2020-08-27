@@ -25,7 +25,7 @@ class Practise extends React.Component {
 
     getVerbs() {
         let tense = this.state.selectedTenses[Math.floor(Math.random()*this.state.selectedTenses.length)]
-        fetch('http://localhost:5000/get_conjugations',{
+        fetch('https://rocky-citadel-06291.herokuapp.com/get_conjugations',{
             method: 'post',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
