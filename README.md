@@ -1,4 +1,5 @@
 ## ¡Conjugado!
+<img width="940" alt="conjugado" src="https://user-images.githubusercontent.com/37151940/141344170-5e09e038-5f01-4b9f-84ca-53230029c144.png">
 
 This project is a React front-end that's paired with an [Express server](https://github.com/stevopritchard/conjugation_backend).
 
