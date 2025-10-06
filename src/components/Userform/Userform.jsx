@@ -13,6 +13,30 @@ function routes(props) {
   }
 }
 
+function validateName(name) {
+  if (name.length < 2) {
+    return 'Name must be at least 2 characters.';
+  }
+  return null;
+}
+
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return 'Please enter a valid email address.';
+  }
+  return null;
+}
+
+function validatePassword(password) {
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return 'Password must be 8+ characters with uppercase, number, and special character';
+  }
+  return null;
+}
+
 function Userform({
   cardTitle,
   formGroup,
