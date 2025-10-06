@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -45,19 +47,39 @@ function Userform({
   routeChangeFunction,
   buttonTitle,
 }) {
+  const [errorMessages, setErrorMessages] = useState({
+    name: 'Please enter your name',
+    email: 'Please enter your email',
+    password: 'Please enter your password',
+  });
+
   return (
     <Card style={{ margin: '0 auto' }}>
       <Card.Body>
         <Card.Title>{cardTitle}</Card.Title>
         {formGroup.map((val, i) => {
           return (
-            <FormGroup controlId={formGroup[i].controlId}>
-              <Form.Control
-                type={formGroup[i].type}
-                placeholder={formGroup[i].placeholder}
-                onChange={formGroup[i].onChange}
-              />
-            </FormGroup>
+            <Form noValidate>
+              <FormGroup controlId={formGroup[i].controlId} key={val}>
+                <Form.Control
+                  type={formGroup[i].type}
+                  placeholder={formGroup[i].placeholder}
+                  onChange={formGroup[i].onChange}
+                  isInvalid={
+                    errorMessages[
+                      formGroup[i].type === 'text' ? 'name' : formGroup[i].type
+                    ] !== null
+                  }
+                />
+                <Form.Control.Feedback type="invalid">
+                  {
+                    errorMessages[
+                      formGroup[i].type === 'text' ? 'name' : formGroup[i].type
+                    ]
+                  }
+                </Form.Control.Feedback>
+              </FormGroup>
+            </Form>
           );
         })}
         <p

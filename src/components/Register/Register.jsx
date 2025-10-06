@@ -58,7 +58,7 @@ class Register extends React.Component {
         cardTitle={'Sign Up'}
         formGroup={[
           {
-            type: 'email',
+            type: 'text',
             placeholder: 'Enter name',
             onChange: this.onNameChange,
           },
