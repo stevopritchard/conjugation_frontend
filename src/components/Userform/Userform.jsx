@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
@@ -14,6 +14,30 @@ function routes(props) {
     );
   }
 }
+
+const validators = {
+  name: function (name) {
+    if (name.length < 2) {
+      return 'Name must be at least 2 characters.';
+    }
+    return null;
+  },
+  email: function (email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address.';
+    }
+    return null;
+  },
+  password: function (password) {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return 'Password must be 8+ characters with uppercase, number, and special character';
+    }
+    return null;
+  },
+};
 
 function validateName(name) {
   if (name.length < 2) {
@@ -53,6 +77,23 @@ function Userform({
     password: 'Please enter your password',
   });
 
+  function chooseInputType(type) {
+    return type === 'text' ? 'name' : type;
+  }
+
+  useEffect(() => {
+    console.log(errorMessages);
+  }, [errorMessages]);
+
+  function handleInputValidation(type, value) {
+    setErrorMessages((props) => {
+      return {
+        ...props,
+        [type]: validators[type](value), // pass input value prop here
+      };
+    });
+  }
+
   return (
     <Card style={{ margin: '0 auto' }}>
       <Card.Body>
@@ -66,17 +107,18 @@ function Userform({
                   placeholder={formGroup[i].placeholder}
                   onChange={formGroup[i].onChange}
                   isInvalid={
-                    errorMessages[
-                      formGroup[i].type === 'text' ? 'name' : formGroup[i].type
-                    ] !== null
+                    errorMessages[chooseInputType(formGroup[i].type)] !== null
+                  }
+                  value={formGroup[i].value}
+                  onBlur={() =>
+                    handleInputValidation(
+                      chooseInputType(formGroup[i].type),
+                      formGroup[i].value
+                    )
                   }
                 />
                 <Form.Control.Feedback type="invalid">
-                  {
-                    errorMessages[
-                      formGroup[i].type === 'text' ? 'name' : formGroup[i].type
-                    ]
-                  }
+                  {errorMessages[chooseInputType(formGroup[i].type)]}
                 </Form.Control.Feedback>
               </FormGroup>
             </Form>

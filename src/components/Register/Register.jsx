@@ -61,18 +61,21 @@ class Register extends React.Component {
             type: 'text',
             placeholder: 'Enter name',
             onChange: this.onNameChange,
+            value: this.state.registerName,
           },
           {
             controlId: 'formBasicEmail',
             type: 'email',
             placeholder: 'Enter email',
             onChange: this.onEmailChange,
+            value: this.state.registerEmail,
           },
           {
             controlId: 'formBasicPassword',
             type: 'password',
             placeholder: 'Password',
             onChange: this.onPasswordChange,
+            value: this.state.registerPassword,
           },
         ]}
         responseText={this.state.responseText}
