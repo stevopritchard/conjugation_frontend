@@ -39,30 +39,6 @@ const validators = {
   },
 };
 
-function validateName(name) {
-  if (name.length < 2) {
-    return 'Name must be at least 2 characters.';
-  }
-  return null;
-}
-
-function validateEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return 'Please enter a valid email address.';
-  }
-  return null;
-}
-
-function validatePassword(password) {
-  const passwordRegex =
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-  if (!passwordRegex.test(password)) {
-    return 'Password must be 8+ characters with uppercase, number, and special character';
-  }
-  return null;
-}
-
 function Userform({
   cardTitle,
   formGroup,
@@ -72,18 +48,18 @@ function Userform({
   buttonTitle,
 }) {
   const [errorMessages, setErrorMessages] = useState({
-    name: 'Please enter your name',
+    ...(formGroup.map((form) => form.controlId).includes('formBasicName') && {
+      name: 'Please enter your name',
+    }),
     email: 'Please enter your email',
     password: 'Please enter your password',
   });
 
+  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
+
   function chooseInputType(type) {
     return type === 'text' ? 'name' : type;
   }
-
-  useEffect(() => {
-    console.log(errorMessages);
-  }, [errorMessages]);
 
   function handleInputValidation(type, value) {
     setErrorMessages((props) => {
@@ -94,8 +70,16 @@ function Userform({
     });
   }
 
+  useEffect(() => {
+    setIsReadyToSubmit(
+      Object.values(errorMessages).every(
+        (errorMessage) => errorMessage === null
+      )
+    );
+  }, [errorMessages]);
+
   return (
-    <Card style={{ margin: '0 auto' }}>
+    <Card style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
       <Card.Body>
         <Card.Title>{cardTitle}</Card.Title>
         {formGroup.map((val, i) => {
@@ -133,6 +117,7 @@ function Userform({
           variant="primary"
           type="submit"
           onClick={() => onSubmitFunction()}
+          disabled={!isReadyToSubmit}
         >
           {buttonTitle}
         </Button>
