@@ -1,38 +1,25 @@
-import React from 'react';
+import { useState } from 'react';
 import { Userform } from '../Userform';
 
-class Register extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      registerName: '',
-      registerEmail: '',
-      registerPassword: '',
-      responseText: '',
-    };
+function Register({ routeChange, loadUser }) {
+  const [registerName, setRegisterName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [responseText, setResponseText] = useState('');
+
+  function onNameChange(event) {
+    setRegisterName(event.target.value);
   }
 
-  onNameChange = (event) => {
-    this.setState({ registerName: event.target.value });
-  };
+  function onEmailChange(event) {
+    setRegisterEmail(event.target.value);
+  }
 
-  onEmailChange = (event) => {
-    this.setState({ registerEmail: event.target.value });
-  };
+  function onPasswordChange(event) {
+    setRegisterPassword(event.target.value);
+  }
 
-  onPasswordChange = (event) => {
-    this.setState({ registerPassword: event.target.value });
-  };
-
-  onSubmitRegister = () => {
-    const { registerName, registerEmail, registerPassword } = this.state;
-    if (
-      registerName === '' ||
-      registerEmail === '' ||
-      registerPassword === ''
-    ) {
-      this.setState({ responseText: 'Please fill in all fields' });
-    }
+  function onSubmitRegister() {
     fetch('http://localhost:3001/register', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
@@ -45,46 +32,44 @@ class Register extends React.Component {
       .then((response) => response.json())
       .then((user) => {
         if (user.id) {
-          this.props.loadUser(user);
-          this.props.routeChange('home');
+          loadUser(user);
+          routeChange('home');
         }
       })
       .catch((err) => console.log(err));
-  };
-
-  render() {
-    return (
-      <Userform
-        cardTitle={'Sign Up'}
-        formGroup={[
-          {
-            controlId: 'formBasicName',
-            type: 'text',
-            placeholder: 'Enter name',
-            onChange: this.onNameChange,
-            value: this.state.registerName,
-          },
-          {
-            controlId: 'formBasicEmail',
-            type: 'email',
-            placeholder: 'Enter email',
-            onChange: this.onEmailChange,
-            value: this.state.registerEmail,
-          },
-          {
-            controlId: 'formBasicPassword',
-            type: 'password',
-            placeholder: 'Password',
-            onChange: this.onPasswordChange,
-            value: this.state.registerPassword,
-          },
-        ]}
-        responseText={this.state.responseText}
-        onSubmitFunction={this.onSubmitRegister}
-        buttonTitle={'Register'}
-      />
-    );
   }
+
+  return (
+    <Userform
+      cardTitle={'Sign Up'}
+      formGroup={[
+        {
+          controlId: 'formBasicName',
+          type: 'text',
+          placeholder: 'Enter name',
+          onChange: onNameChange,
+          value: registerName,
+        },
+        {
+          controlId: 'formBasicEmail',
+          type: 'email',
+          placeholder: 'Enter email',
+          onChange: onEmailChange,
+          value: registerEmail,
+        },
+        {
+          controlId: 'formBasicPassword',
+          type: 'password',
+          placeholder: 'Password',
+          onChange: onPasswordChange,
+          value: registerPassword,
+        },
+      ]}
+      responseText={responseText}
+      onSubmitFunction={onSubmitRegister}
+      buttonTitle={'Register'}
+    />
+  );
 }
 
 export default Register;
