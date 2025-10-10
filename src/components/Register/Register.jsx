@@ -5,18 +5,35 @@ function Register({ routeChange, loadUser }) {
   const [registerName, setRegisterName] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [formInputData, setFormInputData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
   const [responseText, setResponseText] = useState('');
 
   function onNameChange(event) {
-    setRegisterName(event.target.value);
+    const { value } = event.target;
+    setFormInputData((prevState) => ({
+      ...prevState,
+      name: value,
+    }));
   }
 
   function onEmailChange(event) {
-    setRegisterEmail(event.target.value);
+    const { value } = event.target;
+    setFormInputData((prevState) => ({
+      ...prevState,
+      email: value,
+    }));
   }
 
   function onPasswordChange(event) {
-    setRegisterPassword(event.target.value);
+    const { value } = event.target;
+    setFormInputData((prevState) => ({
+      ...prevState,
+      password: value,
+    }));
   }
 
   function onSubmitRegister() {
@@ -48,21 +65,21 @@ function Register({ routeChange, loadUser }) {
           type: 'text',
           placeholder: 'Enter name',
           onChange: onNameChange,
-          value: registerName,
+          value: formInputData.name,
         },
         {
           controlId: 'formBasicEmail',
           type: 'email',
           placeholder: 'Enter email',
           onChange: onEmailChange,
-          value: registerEmail,
+          value: formInputData.email,
         },
         {
           controlId: 'formBasicPassword',
           type: 'password',
           placeholder: 'Password',
           onChange: onPasswordChange,
-          value: registerPassword,
+          value: formInputData.password,
         },
       ]}
       responseText={responseText}
