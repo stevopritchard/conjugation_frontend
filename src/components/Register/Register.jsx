@@ -9,28 +9,14 @@ function Register({ routeChange, loadUser }) {
   });
   const [responseText, setResponseText] = useState('');
 
-  function onNameChange(event) {
-    const { value } = event.target;
-    setFormInputData((prevState) => ({
-      ...prevState,
-      name: value,
-    }));
-  }
-
-  function onEmailChange(event) {
-    const { value } = event.target;
-    setFormInputData((prevState) => ({
-      ...prevState,
-      email: value,
-    }));
-  }
-
-  function onPasswordChange(event) {
-    const { value } = event.target;
-    setFormInputData((prevState) => ({
-      ...prevState,
-      password: value,
-    }));
+  function handleInputChange(fieldName) {
+    return function (event) {
+      const { value } = event.target;
+      setFormInputData((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
+    };
   }
 
   function onSubmitRegister() {
@@ -61,21 +47,21 @@ function Register({ routeChange, loadUser }) {
           controlId: 'formBasicName',
           type: 'text',
           placeholder: 'Enter name',
-          onChange: onNameChange,
+          onChange: handleInputChange('name'),
           value: formInputData.name,
         },
         {
           controlId: 'formBasicEmail',
           type: 'email',
           placeholder: 'Enter email',
-          onChange: onEmailChange,
+          onChange: handleInputChange('email'),
           value: formInputData.email,
         },
         {
           controlId: 'formBasicPassword',
           type: 'password',
           placeholder: 'Password',
-          onChange: onPasswordChange,
+          onChange: handleInputChange('password'),
           value: formInputData.password,
         },
       ]}
