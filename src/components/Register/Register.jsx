@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { Userform } from '../Userform';
 
 function Register({ routeChange, loadUser }) {
-  const [registerName, setRegisterName] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
   const [formInputData, setFormInputData] = useState({
     name: '',
     email: '',
@@ -41,9 +38,9 @@ function Register({ routeChange, loadUser }) {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: registerName,
-        email: registerEmail,
-        password: registerPassword,
+        name: formInputData.name,
+        email: formInputData.email,
+        password: formInputData.password,
       }),
     })
       .then((response) => response.json())
