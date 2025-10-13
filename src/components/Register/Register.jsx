@@ -1,86 +1,98 @@
-import React from 'react';
+import { useState } from 'react';
 import { Userform } from '../Userform';
 
-class Register extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      registerName: '',
-      registerEmail: '',
-      registerPassword: '',
-      responseText: '',
+function Register({ routeChange, loadUser }) {
+  const [formInputData, setFormInputData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const [responseText, setResponseText] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  function handleInputChange(fieldName) {
+    return function (event) {
+      const { value } = event.target;
+      setFormInputData((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
     };
   }
 
-  onNameChange = (event) => {
-    this.setState({ registerName: event.target.value });
-  };
+  function onSubmitRegister() {
+    setLoading(true);
+    setResponseText(''); // Clear previous errors
 
-  onEmailChange = (event) => {
-    this.setState({ registerEmail: event.target.value });
-  };
-
-  onPasswordChange = (event) => {
-    this.setState({ registerPassword: event.target.value });
-  };
-
-  onSubmitRegister = () => {
-    const { registerName, registerEmail, registerPassword } = this.state;
-    if (
-      registerName === '' ||
-      registerEmail === '' ||
-      registerPassword === ''
-    ) {
-      this.setState({ responseText: 'Please fill in all fields' });
-    }
     fetch('http://localhost:3001/register', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: registerName,
-        email: registerEmail,
-        password: registerPassword,
+        name: formInputData.name,
+        email: formInputData.email,
+        password: formInputData.password,
       }),
     })
-      .then((response) => response.json())
-      .then((user) => {
-        if (user.id) {
-          this.props.loadUser(user);
-          this.props.routeChange('home');
+      .then((response) => {
+        // Check HTTP status first
+        if (!response.ok) {
+          // Handle different status codes
+          if (response.status === 404) {
+            throw new Error('Registration endpoint not found');
+          }
+          if (response.status === 500) {
+            throw new Error('Server error, please try again');
+          }
+          throw new Error('Registration failed');
         }
+        return response.json(); // Only parse if response was ok
       })
-      .catch((err) => console.log(err));
-  };
-
-  render() {
-    return (
-      <Userform
-        cardTitle={'Sign Up'}
-        formGroup={[
-          {
-            type: 'email',
-            placeholder: 'Enter name',
-            onChange: this.onNameChange,
-          },
-          {
-            controlId: 'formBasicEmail',
-            type: 'email',
-            placeholder: 'Enter email',
-            onChange: this.onEmailChange,
-          },
-          {
-            controlId: 'formBasicPassword',
-            type: 'password',
-            placeholder: 'Password',
-            onChange: this.onPasswordChange,
-          },
-        ]}
-        responseText={this.state.responseText}
-        onSubmitFunction={this.onSubmitRegister}
-        buttonTitle={'Register'}
-      />
-    );
+      .then((user) => {
+        // Check if registration actually succeeded
+        if (!user.id) {
+          throw new Error('Registration failed - no user returned');
+        }
+        loadUser(user);
+        routeChange('home');
+      })
+      .catch((error) => {
+        // All errors end up here - network or HTTP
+        setResponseText(error.message);
+        setLoading(false); // Only set loading false on error (component still mounted)
+      });
   }
+
+  return (
+    <Userform
+      cardTitle={'Sign Up'}
+      formGroup={[
+        {
+          controlId: 'formBasicName',
+          type: 'text',
+          placeholder: 'Enter name',
+          onChange: handleInputChange('name'),
+          value: formInputData.name,
+        },
+        {
+          controlId: 'formBasicEmail',
+          type: 'email',
+          placeholder: 'Enter email',
+          onChange: handleInputChange('email'),
+          value: formInputData.email,
+        },
+        {
+          controlId: 'formBasicPassword',
+          type: 'password',
+          placeholder: 'Password',
+          onChange: handleInputChange('password'),
+          value: formInputData.password,
+        },
+      ]}
+      responseText={loading ? 'Checking your info...' : responseText}
+      onSubmitFunction={onSubmitRegister}
+      buttonTitle={'Register'}
+    />
+  );
 }
 
 export default Register;

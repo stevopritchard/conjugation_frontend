@@ -29,3 +29,11 @@
 .navbar-brand, .nav-link {
   color: white !important;
 }
+
+.invalid-feedback {
+  display: block;
+  height: 3em; /* Locks it to ~2 lines of text */
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-word;
+}

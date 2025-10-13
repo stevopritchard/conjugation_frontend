@@ -50,12 +50,14 @@ class SignIn extends React.Component {
             type: 'email',
             placeholder: 'Enter email',
             onChange: this.onEmailChange,
+            value: this.state.signInEmail,
           },
           {
             controlId: 'formBasicPassword',
             type: 'password',
             placeholder: 'Password',
             onChange: this.onPasswordChange,
+            value: this.state.signInPassword,
           },
         ]}
         onSubmitFunction={this.onSubmitSignIn}
