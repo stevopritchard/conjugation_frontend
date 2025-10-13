@@ -2,16 +2,27 @@ import { useState } from 'react';
 import { Userform } from '../Userform';
 
 function SignIn({ routeChange, loadUser }) {
-  const [signInEmail, setSignInEmail] = useState('');
-  const [signInPassword, setSignInPassword] = useState('');
+  const [formInputData, setFormInputData] = useState({
+    email: '',
+    password: '',
+  });
   const [responseText, setResponseText] = useState('');
+  const [loading, setLoading] = useState(false);
 
   function onEmailChange(event) {
-    setSignInEmail(event.target.value);
+    const { value } = event.target;
+    setFormInputData((prevState) => ({
+      ...prevState,
+      email: value,
+    }));
   }
 
   function onPasswordChange(event) {
-    setSignInPassword(event.target.value);
+    const { value } = event.target;
+    setFormInputData((prevState) => ({
+      ...prevState,
+      password: value,
+    }));
   }
 
   function onSubmitSignIn() {
@@ -19,8 +30,8 @@ function SignIn({ routeChange, loadUser }) {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: signInEmail,
-        password: signInPassword,
+        email: formInputData.email,
+        password: formInputData.password,
       }),
     })
       .then((response) => response.json())
@@ -42,16 +53,17 @@ function SignIn({ routeChange, loadUser }) {
           type: 'email',
           placeholder: 'Enter email',
           onChange: onEmailChange,
-          value: signInEmail,
+          value: formInputData.email,
         },
         {
           controlId: 'formBasicPassword',
           type: 'password',
           placeholder: 'Password',
           onChange: onPasswordChange,
-          value: signInPassword,
+          value: formInputData.password,
         },
       ]}
+      responseText={loading ? 'Checking your info...' : responseText}
       onSubmitFunction={onSubmitSignIn}
       buttonTitle={'Sign In'}
       routeChangeFunction={routeChange}
