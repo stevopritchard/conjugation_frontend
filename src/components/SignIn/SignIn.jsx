@@ -9,20 +9,14 @@ function SignIn({ routeChange, loadUser }) {
   const [responseText, setResponseText] = useState('');
   const [loading, setLoading] = useState(false);
 
-  function onEmailChange(event) {
-    const { value } = event.target;
-    setFormInputData((prevState) => ({
-      ...prevState,
-      email: value,
-    }));
-  }
-
-  function onPasswordChange(event) {
-    const { value } = event.target;
-    setFormInputData((prevState) => ({
-      ...prevState,
-      password: value,
-    }));
+  function handleInputChange(fieldName) {
+    return function (event) {
+      const { value } = event.target;
+      setFormInputData((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
+    };
   }
 
   function onSubmitSignIn() {
@@ -52,14 +46,14 @@ function SignIn({ routeChange, loadUser }) {
           controlId: 'formBasicEmail',
           type: 'email',
           placeholder: 'Enter email',
-          onChange: onEmailChange,
+          onChange: handleInputChange('email'),
           value: formInputData.email,
         },
         {
           controlId: 'formBasicPassword',
           type: 'password',
           placeholder: 'Password',
-          onChange: onPasswordChange,
+          onChange: handleInputChange('password'),
           value: formInputData.password,
         },
       ]}
