@@ -1,26 +1,20 @@
-import React from 'react';
+import { useState } from 'react';
 import { Userform } from '../Userform';
 
-class SignIn extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      signInEmail: '',
-      signInPassword: '',
-      responseText: '',
-    };
+function SignIn({ routeChange, loadUser }) {
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [responseText, setResponseText] = useState('');
+
+  function onEmailChange(event) {
+    setSignInEmail(event.target.value);
   }
 
-  onEmailChange = (event) => {
-    this.setState({ signInEmail: event.target.value });
-  };
+  function onPasswordChange(event) {
+    setSignInPassword(event.target.value);
+  }
 
-  onPasswordChange = (event) => {
-    this.setState({ signInPassword: event.target.value });
-  };
-
-  onSubmitSignIn = () => {
-    const { signInEmail, signInPassword } = this.state;
+  function onSubmitSignIn() {
     fetch('http://localhost:3001/signin', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
@@ -32,40 +26,37 @@ class SignIn extends React.Component {
       .then((response) => response.json())
       .then((user) => {
         if (user.id) {
-          this.props.loadUser(user);
-          this.props.routeChange('home');
+          loadUser(user);
+          routeChange('home');
         }
       })
       .catch((err) => console.log(err));
-  };
-
-  render() {
-    const { routeChange } = this.props;
-    return (
-      <Userform
-        cardTitle={'Sign In'}
-        formGroup={[
-          {
-            controlId: 'formBasicEmail',
-            type: 'email',
-            placeholder: 'Enter email',
-            onChange: this.onEmailChange,
-            value: this.state.signInEmail,
-          },
-          {
-            controlId: 'formBasicPassword',
-            type: 'password',
-            placeholder: 'Password',
-            onChange: this.onPasswordChange,
-            value: this.state.signInPassword,
-          },
-        ]}
-        onSubmitFunction={this.onSubmitSignIn}
-        buttonTitle={'Sign In'}
-        routeChangeFunction={routeChange}
-      />
-    );
   }
+
+  return (
+    <Userform
+      cardTitle={'Sign In'}
+      formGroup={[
+        {
+          controlId: 'formBasicEmail',
+          type: 'email',
+          placeholder: 'Enter email',
+          onChange: onEmailChange,
+          value: signInEmail,
+        },
+        {
+          controlId: 'formBasicPassword',
+          type: 'password',
+          placeholder: 'Password',
+          onChange: onPasswordChange,
+          value: signInPassword,
+        },
+      ]}
+      onSubmitFunction={onSubmitSignIn}
+      buttonTitle={'Sign In'}
+      routeChangeFunction={routeChange}
+    />
+  );
 }
 
 export default SignIn;
