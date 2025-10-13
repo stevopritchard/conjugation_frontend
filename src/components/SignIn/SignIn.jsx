@@ -1,71 +1,69 @@
 import React from 'react';
-import { Userform } from '../Userform';
+import {Userform} from '../Userform'
 
 class SignIn extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      signInEmail: '',
-      signInPassword: '',
-      responseText: '',
-    };
-  }
-
-  onEmailChange = (event) => {
-    this.setState({ signInEmail: event.target.value });
-  };
-
-  onPasswordChange = (event) => {
-    this.setState({ signInPassword: event.target.value });
-  };
-
-  onSubmitSignIn = () => {
-    const { signInEmail, signInPassword } = this.state;
-    fetch('http://localhost:3001/signin', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: signInEmail,
-        password: signInPassword,
-      }),
-    })
-      .then((response) => response.json())
-      .then((user) => {
-        if (user.id) {
-          this.props.loadUser(user);
-          this.props.routeChange('home');
+    constructor(props) {
+        super(props);
+        this.state = {
+            signInEmail: "",
+            signInPassword: "",
+            responseText: ""
         }
-      })
-      .catch((err) => console.log(err));
-  };
+    }
 
-  render() {
-    const { routeChange } = this.props;
-    return (
-      <Userform
-        cardTitle={'Sign In'}
-        formGroup={[
-          {
-            controlId: 'formBasicEmail',
-            type: 'email',
-            placeholder: 'Enter email',
-            onChange: this.onEmailChange,
-            value: this.state.signInEmail,
-          },
-          {
-            controlId: 'formBasicPassword',
-            type: 'password',
-            placeholder: 'Password',
-            onChange: this.onPasswordChange,
-            value: this.state.signInPassword,
-          },
-        ]}
-        onSubmitFunction={this.onSubmitSignIn}
-        buttonTitle={'Sign In'}
-        routeChangeFunction={routeChange}
-      />
-    );
-  }
+    onEmailChange = (event) => {
+        this.setState({signInEmail: event.target.value})
+    }
+
+    onPasswordChange = (event) => {
+        this.setState({signInPassword: event.target.value})
+    }
+
+    onSubmitSignIn = () => {
+        const { signInEmail, signInPassword } = this.state;
+        fetch('https://rocky-citadel-06291.herokuapp.com/signin', {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              email: signInEmail,
+              password: signInPassword
+            })
+        })
+        .then(response => response.json())
+        .then(user => {if(user.id) {
+            this.props.loadUser(user)
+            this.props.routeChange("home");
+            }
+        })
+        .catch(err => console.log(err))
+    }
+
+    render(){
+        const { routeChange } = this.props;
+        return(
+            <Userform 
+                cardTitle = {"Sign In"}
+                formGroup = {[
+                    {
+                        controlId: "formBasicEmail",
+                        type: "email",
+                        placeholder: "Enter email",
+                        onChange: this.onEmailChange
+                    },
+                    {
+                        controlId: "formBasicPassword",
+                        type: "password",
+                        placeholder: "Password",
+                        onChange: this.onPasswordChange
+
+                    }
+                ]}
+                onSubmitFunction = {this.onSubmitSignIn}
+                buttonTitle = {"Sign In"}
+                routeChangeFunction = {routeChange}
+            />
+        )
+    }
 }
 
-export default SignIn;
+export default SignIn
