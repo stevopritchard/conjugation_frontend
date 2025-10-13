@@ -28,14 +28,35 @@ function SignIn({ routeChange, loadUser }) {
         password: formInputData.password,
       }),
     })
-      .then((response) => response.json())
-      .then((user) => {
-        if (user.id) {
-          loadUser(user);
-          routeChange('home');
+      .then((response) => {
+        // Check HTTP status first
+        if (!response.ok) {
+          // Handle different status codes
+          if (response.status === 404) {
+            throw new Error('Sign in endpoint not found');
+          }
+          if (response.status === 500) {
+            throw new Error('Server error, please try again');
+          }
+          throw new Error(
+            'Sign in failed - please check your credentials and try again'
+          );
         }
+        return response.json(); // Only parse if response was ok
       })
-      .catch((err) => console.log(err));
+      .then((user) => {
+        // Check if sign in actually succeeded
+        if (!user.id) {
+          throw new Error('Sign in failed - no user returned');
+        }
+        loadUser(user);
+        routeChange('home');
+      })
+      .catch((error) => {
+        // All errors end up here - network or HTTP
+        setResponseText(error.message);
+        setLoading(false); // Only set loading false on error (component still mounted)
+      });
   }
 
   return (
