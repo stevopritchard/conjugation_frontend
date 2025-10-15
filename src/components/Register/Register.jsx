@@ -1,24 +1,16 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import { Userform } from '../Userform';
+import { AuthContext } from '../../store/auth-context';
 
 function Register({ routeChange, loadUser }) {
-  const [formInputData, setFormInputData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [responseText, setResponseText] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  function handleInputChange(fieldName) {
-    return function (event) {
-      const { value } = event.target;
-      setFormInputData((prevState) => ({
-        ...prevState,
-        [fieldName]: value,
-      }));
-    };
-  }
+  const {
+    formInputData,
+    responseText,
+    setResponseText,
+    loading,
+    setLoading,
+    handleInputChange,
+  } = useContext(AuthContext);
 
   function onSubmitRegister() {
     setLoading(true);
