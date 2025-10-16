@@ -7,6 +7,7 @@ export const AuthContext = createContext({
   loading: Boolean,
   setLoading: () => {},
   handleInputChange: () => {},
+  submitForm: () => {},
 });
 
 export default function AuthContextProvider({ children }) {
@@ -28,6 +29,65 @@ export default function AuthContextProvider({ children }) {
     };
   }
 
+  const authConfig = {
+    register: {
+      endpoint: '/register',
+      fields: ['name', 'email', 'password'],
+      errorMessage: 'Registration',
+    },
+    signin: {
+      endpoint: '/signin',
+      fields: ['email', 'password'],
+      errorMessage: 'Sign in',
+    },
+  };
+
+  function submitForm(type, routeChange, loadUser) {
+    const config = authConfig[type];
+    const body = {};
+    config.fields.forEach((field) => {
+      body[field] = formInputData[field];
+    });
+    const errorType = config.errorMessage;
+    fetch(`http://localhost:3001${config.endpoint}`, {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        // Check HTTP status first
+        if (!response.ok) {
+          // Handle different status codes
+          if (response.status === 404) {
+            throw new Error(`${errorType} endpoint not found`);
+          }
+          if (response.status === 500) {
+            throw new Error('Server error, please try again');
+          }
+          throw new Error(
+            // NEED DIFFERENT MESSAGES FOR REGISTRATION & SIGNIN
+            type === 'registration'
+              ? `${errorType} failed - no user was created`
+              : `${errorType} failed - please check your credentials and try again`
+          );
+        }
+        return response.json(); // Only parse if response was ok
+      })
+      .then((user) => {
+        // Check if sign in actually succeeded
+        if (!user.id) {
+          throw new Error(`${errorType} failed - no user returned`);
+        }
+        loadUser(user);
+        routeChange('home');
+      })
+      .catch((error) => {
+        // All errors end up here - network or HTTP
+        setResponseText(error.message);
+        setLoading(false); // Only set loading false on error (component still mounted)
+      });
+  }
+
   const authContextValue = {
     formInputData: formInputData,
     responseText: responseText,
@@ -35,6 +95,7 @@ export default function AuthContextProvider({ children }) {
     loading: loading,
     setLoading: setLoading,
     handleInputChange: handleInputChange,
+    submitForm: submitForm,
   };
   return (
     <AuthContext.Provider value={authContextValue}>
