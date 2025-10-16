@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header/Header';
 import { Reference } from './containers/Reference';
 import { Practise } from './containers/Practise';
@@ -7,79 +7,63 @@ import { Register } from './components/Register';
 import AuthContextProvider from './store/auth-context';
 import './App.css';
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      route: 'signin',
-      signedIn: false,
-      mode: 'reference',
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        favourites: [],
-        joined: '',
-      },
-    };
-  }
+function App() {
+  const [route, setRoute] = useState('signin');
+  const [signedIn, setSignedIn] = useState(false);
+  const [mode, setMode] = useState('reference');
+  const [user, setUser] = useState({
+    id: '',
+    name: '',
+    email: '',
+    favourites: [],
+    joined: '',
+  });
 
-  onRouteChange = (route) => {
-    this.setState({ route: route });
+  function onRouteChange(route) {
+    setRoute(route);
     if (route === 'signin' || route === 'register') {
-      this.setState({ signedIn: false });
+      setSignedIn(false);
     } else if (route === 'home') {
-      this.setState({ signedIn: true });
+      setSignedIn(true);
     }
-  };
-
-  onModeChange = (mode) => {
-    this.setState({ mode: mode });
-  };
-
-  loadUser = (user) => {
-    this.setState({
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        favourites: user.favourites,
-        joined: user.joined,
-      },
-    });
-  };
-
-  render() {
-    const { route, mode } = this.state;
-    return (
-      <div className="App">
-        <AuthContextProvider>
-          <Header
-            isSignedIn={this.state.signedIn}
-            routeChange={this.onRouteChange}
-            modeChange={this.onModeChange}
-          />
-          {route === 'home' ? (
-            mode === 'reference' ? (
-              <Reference
-                id={this.state.user.id}
-                favourites={this.state.user.favourites}
-              />
-            ) : (
-              <Practise />
-            )
-          ) : route === 'signin' ? (
-            <SignIn routeChange={this.onRouteChange} loadUser={this.loadUser} />
-          ) : (
-            <Register
-              routeChange={this.onRouteChange}
-              loadUser={this.loadUser}
-            />
-          )}
-        </AuthContextProvider>
-      </div>
-    );
   }
+
+  function onModeChange(mode) {
+    setMode(mode);
+  }
+
+  function loadUser(user) {
+    setUser({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      favourites: user.favourites,
+      joined: user.joined,
+    });
+  }
+
+  return (
+    <div className="App">
+      <AuthContextProvider>
+        <Header
+          isSignedIn={signedIn}
+          routeChange={onRouteChange}
+          modeChange={onModeChange}
+        />
+        {route === 'home' ? (
+          mode === 'reference' ? (
+            <Reference id={user.id} favourites={user.favourites} />
+          ) : (
+            <Practise />
+          )
+        ) : route === 'signin' ? (
+          <SignIn routeChange={onRouteChange} loadUser={loadUser} />
+        ) : (
+          <Register routeChange={onRouteChange} loadUser={loadUser} />
+        )}
+      </AuthContextProvider>
+    </div>
+  );
 }
 
 export default App;
