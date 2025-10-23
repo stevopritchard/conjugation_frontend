@@ -4,6 +4,7 @@ import {
   RouterProvider,
   Navigate,
 } from 'react-router-dom';
+import RootLayout from './containers/RootLayout/RootLayout';
 import Header from './components/Header/Header';
 import { Reference } from './containers/Reference';
 import { Practise } from './containers/Practise';
@@ -51,32 +52,42 @@ function App() {
     () =>
       createBrowserRouter([
         {
-          path: '/signin',
-          element: <SignIn loadUser={loadUser} />,
-        },
-        {
-          path: '/register',
-          element: <Register loadUser={loadUser} />,
-        },
-        {
           path: '/',
-          element: user.id ? (
-            <Reference id={user.id} favourites={user.favourites} />
-          ) : (
-            <Navigate to="/signin" replace />
-          ),
-        },
-        {
-          path: '/reference',
-          element: user.id ? (
-            <Reference id={user.id} favourites={user.favourites} />
-          ) : (
-            <Navigate to="/signin" replace />
-          ),
-        },
-        {
-          path: '/practise',
-          element: user.id ? <Practise /> : <Navigate to="/signin" replace />,
+          element: <RootLayout user={user} />,
+          children: [
+            {
+              path: '/signin',
+              element: <SignIn loadUser={loadUser} />,
+            },
+            {
+              path: '/register',
+              element: <Register loadUser={loadUser} />,
+            },
+            {
+              path: '/',
+              element: user.id ? (
+                <Reference id={user.id} favourites={user.favourites} />
+              ) : (
+                <Navigate to="/signin" replace />
+              ),
+            },
+            {
+              path: '/reference',
+              element: user.id ? (
+                <Reference id={user.id} favourites={user.favourites} />
+              ) : (
+                <Navigate to="/signin" replace />
+              ),
+            },
+            {
+              path: '/practise',
+              element: user.id ? (
+                <Practise />
+              ) : (
+                <Navigate to="/signin" replace />
+              ),
+            },
+          ],
         },
       ]),
     [user]
@@ -85,11 +96,6 @@ function App() {
   return (
     <div className="App">
       <AuthContextProvider>
-        <Header
-          isSignedIn={signedIn}
-          routeChange={onRouteChange}
-          modeChange={onModeChange}
-        />
         <RouterProvider router={router} />
       </AuthContextProvider>
     </div>
