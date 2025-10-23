@@ -5,7 +5,6 @@ import {
   Navigate,
 } from 'react-router-dom';
 import RootLayout from './containers/RootLayout/RootLayout';
-import Header from './components/Header/Header';
 import { Reference } from './containers/Reference';
 import { Practise } from './containers/Practise';
 import { SignIn } from './components/SignIn';
@@ -14,9 +13,6 @@ import AuthContextProvider from './store/auth-context';
 import './App.css';
 
 function App() {
-  const [route, setRoute] = useState('signin');
-  const [signedIn, setSignedIn] = useState(false);
-  const [mode, setMode] = useState('reference');
   const [user, setUser] = useState({
     id: '',
     name: '',
@@ -24,19 +20,6 @@ function App() {
     favourites: [],
     joined: '',
   });
-
-  function onRouteChange(route) {
-    setRoute(route);
-    if (route === 'signin' || route === 'register') {
-      setSignedIn(false);
-    } else if (route === 'home') {
-      setSignedIn(true);
-    }
-  }
-
-  function onModeChange(mode) {
-    setMode(mode);
-  }
 
   function loadUser(user) {
     setUser({
