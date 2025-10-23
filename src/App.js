@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from 'react-router-dom';
 import Header from './components/Header/Header';
 import { Reference } from './containers/Reference';
 import { Practise } from './containers/Practise';
@@ -42,6 +47,41 @@ function App() {
     });
   }
 
+  const router = useMemo(
+    () =>
+      createBrowserRouter([
+        {
+          path: '/signin',
+          element: <SignIn loadUser={loadUser} />,
+        },
+        {
+          path: '/register',
+          element: <Register loadUser={loadUser} />,
+        },
+        {
+          path: '/',
+          element: user.id ? (
+            <Reference id={user.id} favourites={user.favourites} />
+          ) : (
+            <Navigate to="/signin" replace />
+          ),
+        },
+        {
+          path: '/reference',
+          element: user.id ? (
+            <Reference id={user.id} favourites={user.favourites} />
+          ) : (
+            <Navigate to="/signin" replace />
+          ),
+        },
+        {
+          path: '/practise',
+          element: user.id ? <Practise /> : <Navigate to="/signin" replace />,
+        },
+      ]),
+    [user]
+  );
+
   return (
     <div className="App">
       <AuthContextProvider>
@@ -50,17 +90,7 @@ function App() {
           routeChange={onRouteChange}
           modeChange={onModeChange}
         />
-        {route === 'home' ? (
-          mode === 'reference' ? (
-            <Reference id={user.id} favourites={user.favourites} />
-          ) : (
-            <Practise />
-          )
-        ) : route === 'signin' ? (
-          <SignIn routeChange={onRouteChange} loadUser={loadUser} />
-        ) : (
-          <Register routeChange={onRouteChange} loadUser={loadUser} />
-        )}
+        <RouterProvider router={router} />
       </AuthContextProvider>
     </div>
   );
