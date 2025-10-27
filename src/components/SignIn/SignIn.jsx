@@ -1,8 +1,9 @@
 import { useContext } from 'react';
 import { Userform } from '../Userform';
 import { AuthContext } from '../../store/auth-context';
+import { useNavigate } from 'react-router-dom';
 
-function SignIn({ routeChange, loadUser }) {
+function SignIn({ loadUser }) {
   const {
     formInputData,
     responseText,
@@ -10,6 +11,7 @@ function SignIn({ routeChange, loadUser }) {
     handleInputChange,
     submitForm,
   } = useContext(AuthContext);
+  let navigate = useNavigate();
 
   return (
     <Userform
@@ -31,9 +33,8 @@ function SignIn({ routeChange, loadUser }) {
         },
       ]}
       responseText={loading ? 'Checking your info...' : responseText}
-      onSubmitFunction={() => submitForm('signin', routeChange, loadUser)}
+      onSubmitFunction={() => submitForm('signin', loadUser, navigate)}
       buttonTitle={'Sign In'}
-      routeChangeFunction={routeChange}
     />
   );
 }

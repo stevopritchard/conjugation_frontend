@@ -42,7 +42,7 @@ export default function AuthContextProvider({ children }) {
     },
   };
 
-  function submitForm(type, routeChange, loadUser) {
+  function submitForm(type, loadUser, navigate) {
     const config = authConfig[type];
     const body = {};
     config.fields.forEach((field) => {
@@ -79,7 +79,7 @@ export default function AuthContextProvider({ children }) {
           throw new Error(`${errorType} failed - no user returned`);
         }
         loadUser(user);
-        routeChange('home');
+        navigate('/reference');
       })
       .catch((error) => {
         // All errors end up here - network or HTTP
