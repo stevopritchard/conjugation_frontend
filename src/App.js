@@ -12,14 +12,16 @@ import { Register } from './components/Register';
 import AuthContextProvider from './store/auth-context';
 import './App.css';
 
+const initialUserState = {
+  id: '',
+  name: '',
+  email: '',
+  favourites: [],
+  joined: '',
+};
+
 function App() {
-  const [user, setUser] = useState({
-    id: '',
-    name: '',
-    email: '',
-    favourites: [],
-    joined: '',
-  });
+  const [user, setUser] = useState(initialUserState);
 
   function loadUser(user) {
     setUser({
@@ -31,12 +33,16 @@ function App() {
     });
   }
 
+  function signOut() {
+    setUser(initialUserState);
+  }
+
   const router = useMemo(
     () =>
       createBrowserRouter([
         {
           path: '/',
-          element: <RootLayout user={user} />,
+          element: <RootLayout user={user} signOut={signOut} />,
           children: [
             {
               path: '/signin',

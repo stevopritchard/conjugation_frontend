@@ -8,6 +8,7 @@ export const AuthContext = createContext({
   setLoading: () => {},
   handleInputChange: () => {},
   submitForm: () => {},
+  resetForm: () => {},
 });
 
 export default function AuthContextProvider({ children }) {
@@ -88,6 +89,14 @@ export default function AuthContextProvider({ children }) {
       });
   }
 
+  function resetForm() {
+    setFormInputData({
+      name: '',
+      email: '',
+      password: '',
+    });
+  }
+
   const authContextValue = {
     formInputData: formInputData,
     responseText: responseText,
@@ -96,6 +105,7 @@ export default function AuthContextProvider({ children }) {
     setLoading: setLoading,
     handleInputChange: handleInputChange,
     submitForm: submitForm,
+    resetForm: resetForm,
   };
   return (
     <AuthContext.Provider value={authContextValue}>
