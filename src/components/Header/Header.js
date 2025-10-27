@@ -1,9 +1,17 @@
+import { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
+import { AuthContext } from '../../store/auth-context';
 import './Header.css';
 
-const Navigation = ({ user }) => {
+const Navigation = ({ user, signOut }) => {
+  const { resetForm } = useContext(AuthContext);
+
+  function resetFormAndSignOut() {
+    signOut();
+    resetForm();
+  }
   return (
     <Navbar expand="lg">
       <Navbar.Brand>
@@ -19,7 +27,11 @@ const Navigation = ({ user }) => {
             <NavLink className={'nav-link'} to="/practise">
               Practise
             </NavLink>
-            <NavLink className={'nav-link'} to="/signin">
+            <NavLink
+              className={'nav-link'}
+              to="/signin"
+              onClick={resetFormAndSignOut}
+            >
               Sign Out
             </NavLink>
           </Nav>
