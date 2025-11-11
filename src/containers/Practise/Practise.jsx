@@ -1,25 +1,36 @@
-import { useState } from 'react';
+import { useState, useReducer, useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Question from '../../components/Question/Question';
+import quizReducer from '../../store/quiz-reducer';
 import './Practise.css';
 
 function Practise() {
-  const [testActive, setTestActive] = useState(false);
-  const [selectedTenses, setSelectedTenses] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
-  const [totalQuestions, setTotalQuestions] = useState(6);
-  const [prevTotalQuestions, setPrevTotalQuestions] = useState(0);
   const [conjugation, setConjugation] = useState({});
-  const [score, setScore] = useState(0);
   const [testCounter, setTestCounter] = useState(0);
+
+  const [quizState, setQuizState] = useState({
+    isActive: false,
+    currentQuestion: 1,
+    totalQuestions: 6,
+    selectedTenses: [],
+    score: 0,
+    prevQuizLength: 0,
+  });
+
+  useEffect(() => {
+    console.log(quizState);
+  }, [quizState]);
+
+  //   const [quizReducerState, quizDispatch] = useReducer(quizReducer);
 
   let randNum = Math.floor(Math.random() * 5);
 
   function getVerbs() {
+    let { selectedTenses } = quizState;
     let tense =
       selectedTenses[Math.floor(Math.random() * selectedTenses.length)];
     fetch('http://localhost:3001/get_conjugations', {
@@ -30,71 +41,90 @@ function Practise() {
       }),
     })
       .then((response) => response.json())
-      .then((verbs) => setConjugation(verbs[0]))
+      .then((verbs) => {
+        console.log(verbs[0]);
+        return setConjugation(verbs[0]);
+      })
       .catch((err) => console.log(err));
   }
 
   function startTest(selection) {
-    //this is a function expression... function declaration didn't work!
-    // let checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
-    if (selectedTenses.length > 0) {
-      if (selection === true) {
-        setScore(0);
+    let { selectedTenses } = quizState;
+    if (selection === true) {
+      if (selectedTenses.length > 0) {
+        setQuizState({
+          ...quizState,
+          score: 0,
+          isActive: selection,
+          currentQuestion: 1,
+        });
+        setTestCounter((prevTestCounter) => {
+          return prevTestCounter + 1;
+        });
+        getVerbs();
       }
-      setTestActive(selection);
-      setCurrentQuestion(1);
-      setTestCounter((prevTestCounter) => {
-        return prevTestCounter + 1;
-      });
-
-      getVerbs();
+      return;
     }
     if (selection === false) {
-      setPrevTotalQuestions(totalQuestions);
-      if (currentQuestion < totalQuestions) {
-        setScore(0);
+      setQuizState({
+        ...quizState,
+        isActive: false,
+        selectedTenses: [],
+        prevQuizLength: quizState.totalQuestions,
+      });
+      if (quizState.currentQuestion < quizState.totalQuestions) {
+        setQuizState((prevQuizState) => ({ ...prevQuizState, score: 0 }));
       }
-      setSelectedTenses([]);
     }
   }
 
   function selectTense(e) {
     if (e.target.checked === true) {
-      setSelectedTenses((prevSelectedTenses) => {
-        return prevSelectedTenses.concat(e.target.id);
-      });
+      setQuizState((prevQuizState) => ({
+        ...prevQuizState,
+        selectedTenses: prevQuizState.selectedTenses.concat(e.target.id),
+      }));
     } else if (e.target.checked === false) {
-      setSelectedTenses((prevSelectedTenses) => {
-        return prevSelectedTenses.filter((item) => item !== e.target.id);
-      });
+      setQuizState((prevQuizState) => ({
+        ...prevQuizState,
+        selectedTenses: prevQuizState.selectedTenses.filter(
+          (item) => item !== e.target.id
+        ),
+      }));
     }
   }
 
   function setQuestions(e) {
-    setTotalQuestions(e.target.value);
+    setQuizState({
+      ...quizState,
+      totalQuestions: e.target.value,
+    });
   }
 
   function nextQuestion(answer) {
-    setScore((prevScore) => {
-      return prevScore + answer;
-    });
-    if (currentQuestion < totalQuestions) {
-      setCurrentQuestion((prevQuestion) => prevQuestion + 1);
+    setQuizState((prevQuizState) => ({
+      ...prevQuizState,
+      score: prevQuizState.score + answer,
+    }));
+    if (quizState.currentQuestion < quizState.totalQuestions) {
+      setQuizState((prevQuizState) => ({
+        ...prevQuizState,
+        currentQuestion: prevQuizState.currentQuestion + 1,
+      }));
       getVerbs();
     } else {
       startTest(false);
-      setSelectedTenses([]);
     }
   }
   return (
     <div className="container-fluid">
-      {testActive === true ? (
+      {quizState.isActive === true ? (
         <Question
           quit={startTest}
-          questionNumber={currentQuestion}
+          questionNumber={quizState.currentQuestion}
           nextQuestion={nextQuestion}
           conjugation={conjugation}
-          score={score}
+          score={quizState.score}
           randNum={randNum}
         />
       ) : (
@@ -103,7 +133,8 @@ function Practise() {
             <Card.Title>Practise</Card.Title>
             {testCounter === 0 ? null : (
               <p>
-                Your score is {score} out of {prevTotalQuestions}
+                Your score is {quizState.score} out of{' '}
+                {quizState.prevQuizLength}
               </p>
             )}
             <Form.Group>
@@ -187,13 +218,15 @@ function Practise() {
                   </Col>
                 </Row>
               </div>
-              <Form.Label>Number of Questions: {totalQuestions}</Form.Label>
+              <Form.Label>
+                Number of Questions: {quizState.totalQuestions}
+              </Form.Label>
               <Form.Control
                 type="range"
                 min="1"
                 max="10"
                 step="1"
-                onChange={(e) => setTotalQuestions(e.target.value)}
+                onChange={(e) => setQuestions(e)}
               />
             </Form.Group>
             <Button variant="primary" onClick={() => startTest(true)}>
