@@ -21,10 +21,6 @@ function Practise() {
     prevQuizLength: 0,
   });
 
-  useEffect(() => {
-    console.log(quizState);
-  }, [quizState]);
-
   //   const [quizReducerState, quizDispatch] = useReducer(quizReducer);
 
   let randNum = Math.floor(Math.random() * 5);
@@ -42,7 +38,6 @@ function Practise() {
     })
       .then((response) => response.json())
       .then((verbs) => {
-        console.log(verbs[0]);
         return setConjugation(verbs[0]);
       })
       .catch((err) => console.log(err));
