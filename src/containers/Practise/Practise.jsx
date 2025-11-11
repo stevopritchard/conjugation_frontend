@@ -23,8 +23,6 @@ function Practise() {
 
   //   const [quizReducerState, quizDispatch] = useReducer(quizReducer);
 
-  let randNum = Math.floor(Math.random() * 5);
-
   function getVerbs() {
     let { selectedTenses } = quizState;
     let tense =
@@ -120,7 +118,6 @@ function Practise() {
           nextQuestion={nextQuestion}
           conjugation={conjugation}
           score={quizState.score}
-          randNum={randNum}
         />
       ) : (
         <Card className="practiseCard">

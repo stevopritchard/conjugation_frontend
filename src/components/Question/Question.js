@@ -12,7 +12,6 @@ const Question = ({
   quit,
   conjugation,
   score,
-  randNum,
 }) => {
   const pronouns = {
     form_1s: 'Yo',
@@ -23,16 +22,21 @@ const Question = ({
     form_3p: 'Ellos/Ellas/Uds.',
   };
   var buttons = document.getElementsByTagName('input');
-  var forms = Object.keys(conjugation);
-  var correctForm = forms[1 + randNum];
+  var forms = Object.keys(conjugation).filter((form) => form !== 'infinitive');
+  var randNum = Math.floor(Math.random() * forms.length);
+  var correctForm = forms[randNum];
   var correctPronoun = pronouns[correctForm];
   var answer = 0;
+
   const checked = (e) => {
     if (e.target.id === correctForm) {
       answer = 1;
     }
   };
 
+  console.log(forms);
+  console.log(randNum);
+  console.log(correctForm);
   function uncheckButtons() {
     for (let i = 0; i < buttons.length; i++) {
       buttons[i].checked = false;
@@ -70,8 +74,8 @@ const Question = ({
               // ref={radio}
               type="radio"
               name="multipleChoice"
-              id={forms[1]}
-              label={conjugation[forms[1]]}
+              id={forms[0]}
+              label={conjugation[forms[0]]}
               onChange={checked}
             />
           </Col>
@@ -85,8 +89,8 @@ const Question = ({
             <Form.Check
               type="radio"
               name="multipleChoice"
-              id={forms[2]}
-              label={conjugation[forms[2]]}
+              id={forms[1]}
+              label={conjugation[forms[1]]}
               onChange={checked}
             />
           </Col>
@@ -102,8 +106,8 @@ const Question = ({
             <Form.Check
               type="radio"
               name="multipleChoice"
-              id={forms[3]}
-              label={conjugation[forms[3]]}
+              id={forms[2]}
+              label={conjugation[forms[2]]}
               onChange={checked}
             />
           </Col>
@@ -117,8 +121,8 @@ const Question = ({
             <Form.Check
               type="radio"
               name="multipleChoice"
-              id={forms[4]}
-              label={conjugation[forms[4]]}
+              id={forms[3]}
+              label={conjugation[forms[3]]}
               onChange={checked}
             />
           </Col>
