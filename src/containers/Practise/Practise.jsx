@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect } from 'react';
+import { useState, useReducer } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -21,9 +21,6 @@ function Practise() {
     prevQuizLength: 0,
   });
 
-  useEffect(() => {
-    console.log(quizReducerState);
-  }, [quizReducerState]);
   function getVerbs() {
     let { selectedTenses } = quizReducerState;
     let tense =
