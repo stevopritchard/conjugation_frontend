@@ -34,9 +34,6 @@ const Question = ({
     }
   };
 
-  console.log(forms);
-  console.log(randNum);
-  console.log(correctForm);
   function uncheckButtons() {
     for (let i = 0; i < buttons.length; i++) {
       buttons[i].checked = false;

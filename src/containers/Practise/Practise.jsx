@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect } from 'react';
+import { useState, useReducer } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -12,7 +12,7 @@ function Practise() {
   const [conjugation, setConjugation] = useState({});
   const [testCounter, setTestCounter] = useState(0);
 
-  const [quizState, setQuizState] = useState({
+  const [quizReducerState, quizDispatch] = useReducer(quizReducer, {
     isActive: false,
     currentQuestion: 1,
     totalQuestions: 6,
@@ -21,10 +21,8 @@ function Practise() {
     prevQuizLength: 0,
   });
 
-  //   const [quizReducerState, quizDispatch] = useReducer(quizReducer);
-
   function getVerbs() {
-    let { selectedTenses } = quizState;
+    let { selectedTenses } = quizReducerState;
     let tense =
       selectedTenses[Math.floor(Math.random() * selectedTenses.length)];
     fetch('http://localhost:3001/get_conjugations', {
@@ -42,14 +40,11 @@ function Practise() {
   }
 
   function startTest(selection) {
-    let { selectedTenses } = quizState;
+    let { selectedTenses } = quizReducerState;
     if (selection === true) {
       if (selectedTenses.length > 0) {
-        setQuizState({
-          ...quizState,
-          score: 0,
-          isActive: selection,
-          currentQuestion: 1,
+        quizDispatch({
+          type: 'START_TEST',
         });
         setTestCounter((prevTestCounter) => {
           return prevTestCounter + 1;
@@ -59,51 +54,35 @@ function Practise() {
       return;
     }
     if (selection === false) {
-      setQuizState({
-        ...quizState,
-        isActive: false,
-        selectedTenses: [],
-        prevQuizLength: quizState.totalQuestions,
+      quizDispatch({
+        type: 'STOP_TEST',
       });
-      if (quizState.currentQuestion < quizState.totalQuestions) {
-        setQuizState((prevQuizState) => ({ ...prevQuizState, score: 0 }));
-      }
     }
   }
 
   function selectTense(e) {
-    if (e.target.checked === true) {
-      setQuizState((prevQuizState) => ({
-        ...prevQuizState,
-        selectedTenses: prevQuizState.selectedTenses.concat(e.target.id),
-      }));
-    } else if (e.target.checked === false) {
-      setQuizState((prevQuizState) => ({
-        ...prevQuizState,
-        selectedTenses: prevQuizState.selectedTenses.filter(
-          (item) => item !== e.target.id
-        ),
-      }));
-    }
+    quizDispatch({
+      type: 'SELECT_TENSES',
+      payload: e.target,
+    });
   }
 
   function setQuestions(e) {
-    setQuizState({
-      ...quizState,
-      totalQuestions: e.target.value,
+    quizDispatch({
+      type: 'SET_QUIZ_LENGTH',
+      payload: e.target.value,
     });
   }
 
   function nextQuestion(answer) {
-    setQuizState((prevQuizState) => ({
-      ...prevQuizState,
-      score: prevQuizState.score + answer,
-    }));
-    if (quizState.currentQuestion < quizState.totalQuestions) {
-      setQuizState((prevQuizState) => ({
-        ...prevQuizState,
-        currentQuestion: prevQuizState.currentQuestion + 1,
-      }));
+    quizDispatch({
+      type: 'UPDATE_SCORE',
+      payload: answer,
+    });
+    if (quizReducerState.currentQuestion < quizReducerState.totalQuestions) {
+      quizDispatch({
+        type: 'NEXT_QUESTION',
+      });
       getVerbs();
     } else {
       startTest(false);
@@ -111,13 +90,13 @@ function Practise() {
   }
   return (
     <div className="container-fluid">
-      {quizState.isActive === true ? (
+      {quizReducerState.isActive === true ? (
         <Question
           quit={startTest}
-          questionNumber={quizState.currentQuestion}
+          questionNumber={quizReducerState.currentQuestion}
           nextQuestion={nextQuestion}
           conjugation={conjugation}
-          score={quizState.score}
+          score={quizReducerState.score}
         />
       ) : (
         <Card className="practiseCard">
@@ -125,8 +104,8 @@ function Practise() {
             <Card.Title>Practise</Card.Title>
             {testCounter === 0 ? null : (
               <p>
-                Your score is {quizState.score} out of{' '}
-                {quizState.prevQuizLength}
+                Your score is {quizReducerState.score} out of{' '}
+                {quizReducerState.prevQuizLength}
               </p>
             )}
             <Form.Group>
@@ -211,7 +190,7 @@ function Practise() {
                 </Row>
               </div>
               <Form.Label>
-                Number of Questions: {quizState.totalQuestions}
+                Number of Questions: {quizReducerState.totalQuestions}
               </Form.Label>
               <Form.Control
                 type="range"
