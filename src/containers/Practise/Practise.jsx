@@ -11,7 +11,7 @@ import './Practise.css';
 function Practise() {
   const [conjugation, setConjugation] = useState({});
   const [testCounter, setTestCounter] = useState(0);
-
+  const [errorText, setErrorText] = useState('');
   const [quizReducerState, quizDispatch] = useReducer(quizReducer, {
     isActive: false,
     currentQuestion: 1,
@@ -32,11 +32,30 @@ function Practise() {
         tense: tense,
       }),
     })
-      .then((response) => response.json())
-      .then((verbs) => {
-        return setConjugation(verbs[0]);
+      .then((response) => {
+        // Check HTTP status first
+        if (!response.ok) {
+          // Handle different status codes
+          if (response.status === 404) {
+            throw new Error(`Conjugation endpoint not found`);
+          }
+          if (response.status === 500) {
+            throw new Error('Server error, please try again');
+          }
+          throw new Error('Conjugation failed - please try again.');
+        }
+        return response.json(); // Only parse if response was ok
       })
-      .catch((err) => console.log(err));
+
+      .then((verbs) => {
+        // Check if a conjugation is actually returned
+        if (!verbs.length) {
+          throw new Error(`Request failed - no verb conjugation returned`);
+        }
+        setErrorText(''); // clear error message on successful response
+        setConjugation(verbs[0]);
+      })
+      .catch((error) => setErrorText(error.message));
   }
 
   function startTest(selection) {
@@ -97,6 +116,7 @@ function Practise() {
           nextQuestion={nextQuestion}
           conjugation={conjugation}
           score={quizReducerState.score}
+          errorText={errorText}
         />
       ) : (
         <Card className="practiseCard">
@@ -200,6 +220,15 @@ function Practise() {
                 onChange={(e) => setQuestions(e)}
               />
             </Form.Group>
+            <p
+              style={{
+                pointerEvents: 'none',
+                color: 'tomato',
+                fontSize: '0.75em',
+              }}
+            >
+              {errorText}
+            </p>
             <Button variant="primary" onClick={() => startTest(true)}>
               Begin
             </Button>

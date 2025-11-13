@@ -12,6 +12,7 @@ const Question = ({
   quit,
   conjugation,
   score,
+  errorText,
 }) => {
   const pronouns = {
     form_1s: 'Yo',
@@ -125,6 +126,15 @@ const Question = ({
           </Col>
         </Row>
       </Form.Group>
+      <p
+        style={{
+          pointerEvents: 'none',
+          color: 'tomato',
+          fontSize: '0.75em',
+        }}
+      >
+        {errorText}
+      </p>
       <Row>
         <Button onClick={submitAnswer}>Next</Button>
         <Button variant="danger" onClick={() => quit(false)}>
