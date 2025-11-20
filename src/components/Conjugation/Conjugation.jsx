@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -33,8 +33,15 @@ function Conjugation({
 }) {
   const [isFavourite, setIsFavourite] = useState(false);
 
+  const checkFavourites = useCallback(
+    function checkFavourites(verb) {
+      return infinitive === verb;
+    },
+    [infinitive]
+  );
+
   useEffect(() => {
-    fetch('https://rocky-citadel-06291.herokuapp.com/check_favourite', {
+    fetch('http://localhost:3001/check_favourite', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -49,11 +56,7 @@ function Conjugation({
             : setIsFavourite(false);
         }
       });
-  }, [id, favourites]);
-
-  function checkFavourites(verb) {
-    return this.props.infinitive === verb;
-  }
+  }, [id, favourites, checkFavourites]);
 
   function makeFavourite(verb, id) {
     if (isFavourite === true) {
@@ -66,7 +69,7 @@ function Conjugation({
   }
 
   const styles = {
-    starStyle: { color: this.state.isFavourite ? 'gold' : 'grey' },
+    starStyle: { color: isFavourite ? 'gold' : 'grey' },
   };
 
   const { starStyle } = styles;
