@@ -10,33 +10,28 @@ function Reference({ id }) {
   const [favourites, setFavourites] = useState([]);
   const [filteredVerbs, setFilteredVerbs] = useState([]);
   const [verbSelected, setVerbSelected] = useState(false);
-  const [infinitive, setInfinitive] = useState('');
-  const [gerund, setGerund] = useState('');
-  const [past_participle, setpast_participle] = useState('');
-  const [indicative_present, setindicative_present] = useState([]);
-  const [indicative_presentperfect, setindicative_presentperfect] = useState(
-    []
-  );
-  const [indicative_preterite, setindicative_preterite] = useState([]);
-  const [indicative_imperfect, setindicative_imperfect] = useState([]);
-  const [indicative_pastperfect, setindicative_pastperfect] = useState([]);
-  const [indicative_conditional, setindicative_conditional] = useState([]);
-  const [indicative_conditionalperfect, setindicative_conditionalperfect] =
-    useState([]);
-  const [indicative_future, setindicative_future] = useState([]);
-  const [indicative_futureperfect, setindicative_futureperfect] = useState([]);
-  const [imperative_affirmative, setimperative_affirmative] = useState([]);
-  const [imperative_negative, setimperative_negative] = useState([]);
-  const [subjunctive_present, setsubjunctive_present] = useState([]);
-  const [subjunctive_presentperfect, setsubjunctive_presentperfect] = useState(
-    []
-  );
-  const [subjunctive_pastperfect, setsubjunctive_pastperfect] = useState([]);
-  const [subjunctive_imperfect, setsubjunctive_imperfect] = useState([]);
-  const [subjunctive_future, setsubjunctive_future] = useState([]);
-  const [subjunctive_futureperfect, setsubjunctive_futureperfect] = useState(
-    []
-  );
+  const [conjugation, setConjugation] = useState({
+    infinitive: '',
+    gerund: '',
+    past_participle: '',
+    indicative_present: [],
+    indicative_presentperfect: [],
+    indicative_preterite: [],
+    indicative_imperfect: [],
+    indicative_pastperfect: [],
+    indicative_conditional: [],
+    indicative_conditionalperfect: [],
+    indicative_future: [],
+    indicative_futureperfect: [],
+    imperative_affirmative: [],
+    imperative_negative: [],
+    subjunctive_present: [],
+    subjunctive_presentperfect: [],
+    subjunctive_pastperfect: [],
+    subjunctive_imperfect: [],
+    subjunctive_future: [],
+    subjunctive_futureperfect: [],
+  });
 
   const listFavourites = useCallback(
     async function listFavourites() {
@@ -51,6 +46,7 @@ function Reference({ id }) {
 
         const favoriteInfinitives = await response.json();
         setFavourites(favoriteInfinitives);
+        // console.log(favoriteInfinitives);
 
         const verbPromises = favoriteInfinitives.map((infinitive) =>
           fetch('http://localhost:3001/favourite_verbs', {
@@ -100,7 +96,6 @@ function Reference({ id }) {
 
   function verbSelection(selection, verb) {
     setVerbSelected(selection);
-    setInfinitive(verb);
     if (selection === true) {
       const tenses = [
         'http://localhost:3001/gerund',
@@ -135,25 +130,28 @@ function Reference({ id }) {
         })
       )
         .then((tenses) => {
-          setGerund(tenses[0]);
-          setpast_participle(tenses[1]);
-          setindicative_present(tenses[2]);
-          setindicative_presentperfect(tenses[3]);
-          setindicative_preterite(tenses[4]);
-          setindicative_imperfect(tenses[5]);
-          setindicative_pastperfect(tenses[6]);
-          setindicative_conditional(tenses[7]);
-          setindicative_conditionalperfect(tenses[8]);
-          setindicative_future(tenses[9]);
-          setindicative_futureperfect(tenses[10]);
-          setimperative_affirmative(tenses[11]);
-          setimperative_negative(tenses[12]);
-          setsubjunctive_present(tenses[13]);
-          setsubjunctive_presentperfect(tenses[14]);
-          setsubjunctive_pastperfect(tenses[15]);
-          setsubjunctive_imperfect(tenses[16]);
-          setsubjunctive_future(tenses[17]);
-          setsubjunctive_futureperfect(tenses[18]);
+          setConjugation({
+            infinitive: verb,
+            gerund: tenses[0],
+            past_participle: tenses[1],
+            indicative_present: tenses[2],
+            indicative_presentperfect: tenses[3],
+            indicative_preterite: tenses[4],
+            indicative_imperfect: tenses[5],
+            indicative_pastperfect: tenses[6],
+            indicative_conditional: tenses[7],
+            indicative_conditionalperfect: tenses[8],
+            indicative_future: tenses[9],
+            indicative_futureperfect: tenses[10],
+            imperative_affirmative: tenses[11],
+            imperative_negative: tenses[12],
+            subjunctive_present: tenses[13],
+            subjunctive_presentperfect: tenses[14],
+            subjunctive_pastperfect: tenses[15],
+            subjunctive_imperfect: tenses[16],
+            subjunctive_future: tenses[17],
+            subjunctive_futureperfect: tenses[18],
+          });
         })
         .catch((err) => console.log(err));
     }
@@ -190,26 +188,28 @@ function Reference({ id }) {
       <SearchBar searchChange={changeOnSearch} filterVerbs={searchVerbs} />
       {verbSelected === true ? (
         <Conjugation
-          infinitive={infinitive}
-          gerund={gerund}
-          past_participle={past_participle}
-          indicative_present={indicative_present}
-          indicative_presentperfect={indicative_presentperfect}
-          indicative_preterite={indicative_preterite}
-          indicative_imperfect={indicative_imperfect}
-          indicative_pastperfect={indicative_pastperfect}
-          indicative_conditional={indicative_conditional}
-          indicative_conditionalperfect={indicative_conditionalperfect}
-          indicative_future={indicative_future}
-          indicative_futureperfect={indicative_futureperfect}
-          imperative_affirmative={imperative_affirmative}
-          imperative_negative={imperative_negative}
-          subjunctive_present={subjunctive_present}
-          subjunctive_presentperfect={subjunctive_presentperfect}
-          subjunctive_pastperfect={subjunctive_pastperfect}
-          subjunctive_imperfect={subjunctive_imperfect}
-          subjunctive_future={subjunctive_future}
-          subjunctive_futureperfect={subjunctive_futureperfect}
+          infinitive={conjugation.infinitive}
+          gerund={conjugation.gerund}
+          past_participle={conjugation.past_participle}
+          indicative_present={conjugation.indicative_present}
+          indicative_presentperfect={conjugation.indicative_presentperfect}
+          indicative_preterite={conjugation.indicative_preterite}
+          indicative_imperfect={conjugation.indicative_imperfect}
+          indicative_pastperfect={conjugation.indicative_pastperfect}
+          indicative_conditional={conjugation.indicative_conditional}
+          indicative_conditionalperfect={
+            conjugation.indicative_conditionalperfect
+          }
+          indicative_future={conjugation.indicative_future}
+          indicative_futureperfect={conjugation.indicative_futureperfect}
+          imperative_affirmative={conjugation.imperative_affirmative}
+          imperative_negative={conjugation.imperative_negative}
+          subjunctive_present={conjugation.subjunctive_present}
+          subjunctive_presentperfect={conjugation.subjunctive_presentperfect}
+          subjunctive_pastperfect={conjugation.subjunctive_pastperfect}
+          subjunctive_imperfect={conjugation.subjunctive_imperfect}
+          subjunctive_future={conjugation.subjunctive_future}
+          subjunctive_futureperfect={conjugation.subjunctive_futureperfect}
           addFavourite={addFavourite}
           removeFavourite={removeFavourite}
           id={id}
