@@ -50,7 +50,7 @@ function Conjugation({
     })
       .then((response) => response.json())
       .then((favouritesList) => {
-        if (favourites != null) {
+        if (favourites !== null) {
           favouritesList.some(checkFavourites)
             ? setIsFavourite(true)
             : setIsFavourite(false);

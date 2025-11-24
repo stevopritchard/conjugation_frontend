@@ -5,8 +5,9 @@ import CardList from '../../components/CardList/CardList';
 import { Conjugation } from '../../components/Conjugation';
 import './Reference.css';
 
-function Reference({ id, favourites }) {
+function Reference({ id }) {
   const [searchfield, setSearchfield] = useState('');
+  const [favourites, setFavourites] = useState([]);
   const [filteredVerbs, setFilteredVerbs] = useState([]);
   const [verbSelected, setVerbSelected] = useState(false);
   const [infinitive, setInfinitive] = useState('');
@@ -39,39 +40,41 @@ function Reference({ id, favourites }) {
 
   const listFavourites = useCallback(
     async function listFavourites() {
-      let favArray = [];
       try {
-        await Promise.all(
-          favourites.map(async function (favourite) {
-            const response = await fetch(
-              'http://localhost:3001/favourite_verbs',
-              {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  infinitive: favourite,
-                }),
-              }
-            );
-            const verb = await response.json();
-            favArray.push(verb);
-          })
+        const response = await fetch('http://localhost:3001/check_favourite', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch favorites');
+
+        const favoriteInfinitives = await response.json();
+        setFavourites(favoriteInfinitives);
+
+        const verbPromises = favoriteInfinitives.map((infinitive) =>
+          fetch('http://localhost:3001/favourite_verbs', {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ infinitive }),
+          }).then((res) => res.json())
         );
-        setFilteredVerbs(favArray);
+
+        const verbs = await Promise.all(verbPromises);
+        setFilteredVerbs(verbs);
       } catch (err) {
-        console.log(err);
+        console.error(err);
+        // TODO: Set error state
       }
     },
-    [favourites]
+    [id]
   );
 
   useEffect(() => {
-    setVerbSelected(false);
     if (!filteredVerbs?.length) {
       listFavourites();
     }
-    console.log(filteredVerbs);
-  }, [favourites, filteredVerbs, listFavourites]);
+  }, [filteredVerbs, listFavourites]);
 
   function changeOnSearch(event) {
     setSearchfield(event.target.value.toLowerCase());
@@ -90,6 +93,8 @@ function Reference({ id, favourites }) {
         .then((response) => response.json())
         .then((data) => setFilteredVerbs(data))
         .catch((err) => console.log(err));
+    } else {
+      setFilteredVerbs([]);
     }
   }
 
