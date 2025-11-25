@@ -67,10 +67,8 @@ function Reference({ id }) {
   );
 
   useEffect(() => {
-    if (!filteredVerbs?.length) {
-      listFavourites();
-    }
-  }, [filteredVerbs, listFavourites]);
+    listFavourites();
+  }, [listFavourites]);
 
   function changeOnSearch(event) {
     setSearchfield(event.target.value.toLowerCase());
@@ -91,6 +89,7 @@ function Reference({ id }) {
         .catch((err) => console.log(err));
     } else {
       setFilteredVerbs([]);
+      listFavourites();
     }
   }
 
@@ -157,30 +156,38 @@ function Reference({ id }) {
     }
   }
 
-  function addFavourite(verb, id) {
-    fetch('http://localhost:3001/add_favourite', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        infinitive: verb,
-        id: id,
-      }),
-    })
-      .then((response) => response.json())
-      .catch((err) => console.log(err));
+  async function addFavourite(verb, id) {
+    try {
+      const response = await fetch('http://localhost:3001/add_favourite', {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ infinitive: verb, id }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add favorite');
+
+      await listFavourites(); // Reload favorites
+    } catch (err) {
+      console.error(err);
+      // TODO: Show error to user
+    }
   }
 
-  function removeFavourite(verb, id) {
-    fetch('http://localhost:3001/remove_favourite', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        infinitive: verb,
-        id: id,
-      }),
-    })
-      .then((response) => response.json())
-      .catch((err) => console.log(err));
+  async function removeFavourite(verb, id) {
+    try {
+      const response = await fetch('http://localhost:3001/remove_favourite', {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ infinitive: verb, id }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add favorite');
+
+      await listFavourites(); // Reload favorites
+    } catch (err) {
+      console.error(err);
+      // TODO: Show error to user
+    }
   }
 
   return (
