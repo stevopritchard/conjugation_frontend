@@ -7,8 +7,13 @@ import './Conjugation.css';
 import { ConjugationContext } from '../../store/conjugation-context';
 
 function Conjugation({ id }) {
-  const { favourites, conjugation, addFavourite, removeFavourite } =
-    useContext(ConjugationContext);
+  const {
+    favourites,
+    conjugation,
+    responseText,
+    addFavourite,
+    removeFavourite,
+  } = useContext(ConjugationContext);
 
   const [isFavourite, setIsFavourite] = useState(false);
 
@@ -57,6 +62,11 @@ function Conjugation({ id }) {
     <Card className="conjugation">
       <Card.Body>
         <Card.Title>{conjugation.infinitive}</Card.Title>
+        <p
+          style={{ pointerEvents: 'none', color: 'tomato', fontSize: '0.75em' }}
+        >
+          {responseText}
+        </p>
         <Row>
           <Col xs={11} sm={11} md={11} xl={11} lg={11}>
             <Card.Subtitle className="mb-2">

@@ -4,7 +4,9 @@ export const ConjugationContext = createContext({
   setSearchfield: () => {},
   favourites: [],
   filteredVerbs: [],
+  verbSelected: Boolean,
   conjugation: {},
+  responseText: String,
   listFavourites: () => {},
   searchVerbs: () => {},
   verbSelection: () => {},
@@ -39,6 +41,7 @@ export default function ConjugationContextProvider({ children }) {
     subjunctive_future: [],
     subjunctive_futureperfect: [],
   });
+  const [responseText, setResponseText] = useState('');
 
   const listFavourites = useCallback(async function listFavourites(id) {
     try {
@@ -48,11 +51,18 @@ export default function ConjugationContextProvider({ children }) {
         body: JSON.stringify({ id }),
       });
 
-      if (!response.ok) throw new Error('Failed to fetch favorites');
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Favourites endpoint not found');
+        }
+        if (response.status === 500) {
+          throw new Error('Server error, please try again');
+        }
+        throw new Error('Failed to fetch favorites');
+      }
 
       const favoriteInfinitives = await response.json();
       setFavourites(favoriteInfinitives);
-      // console.log(favoriteInfinitives);
 
       const verbPromises = favoriteInfinitives.map((infinitive) =>
         fetch('http://localhost:3001/favourite_verbs', {
@@ -65,8 +75,9 @@ export default function ConjugationContextProvider({ children }) {
       const verbs = await Promise.all(verbPromises);
       setFilteredVerbs(verbs);
     } catch (err) {
-      console.error(err);
-      // TODO: Set error state
+      console.error(err.message);
+      // will be logged to the console;
+      // user will simply not see any favourites
     }
   }, []);
 
@@ -80,9 +91,20 @@ export default function ConjugationContextProvider({ children }) {
           infinitive: searchfield,
         }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            if (response.status === 404) {
+              throw new Error('Verb endpoint not found');
+            }
+            if (response.status === 500) {
+              throw new Error('Server error, please try again');
+            }
+            throw new Error('Search failed');
+          }
+          return response.json();
+        })
         .then((data) => setFilteredVerbs(data))
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err.message));
     } else {
       setFilteredVerbs([]);
       listFavourites(id);
@@ -121,7 +143,18 @@ export default function ConjugationContextProvider({ children }) {
             body: JSON.stringify({
               infinitive: verb,
             }),
-          }).then((response) => Promise.resolve(response.json())); //Promise.resolve required to return map array
+          }).then((response) => {
+            if (!response.ok) {
+              if (response.status === 404) {
+                throw new Error('One or more conjugations not found');
+              }
+              if (response.status === 500) {
+                throw new Error('Server error, please try again');
+              }
+              throw new Error('Conjugation failed');
+            }
+            return Promise.resolve(response.json());
+          }); //Promise.resolve required to return map array
         })
       )
         .then((tenses) => {
@@ -148,7 +181,7 @@ export default function ConjugationContextProvider({ children }) {
             subjunctive_futureperfect: tenses[18],
           });
         })
-        .catch((err) => console.log(err));
+        .catch((err) => setResponseText(err.message));
     }
   }
 
@@ -164,8 +197,7 @@ export default function ConjugationContextProvider({ children }) {
 
       await listFavourites(id); // Reload favorites
     } catch (err) {
-      console.error(err);
-      // TODO: Show error to user
+      setResponseText(err.message);
     }
   }
 
@@ -181,22 +213,22 @@ export default function ConjugationContextProvider({ children }) {
 
       await listFavourites(id); // Reload favorites
     } catch (err) {
-      console.error(err);
-      // TODO: Show error to user
+      setResponseText(err.message);
     }
   }
 
   const conjugationContextValue = {
-    setSearchfield: setSearchfield,
-    favourites: favourites,
-    filteredVerbs: filteredVerbs,
-    verbSelected: verbSelected,
-    conjugation: conjugation,
-    listFavourites: listFavourites,
-    searchVerbs: searchVerbs,
-    verbSelection: verbSelection,
-    addFavourite: addFavourite,
-    removeFavourite: removeFavourite,
+    setSearchfield,
+    favourites,
+    filteredVerbs,
+    verbSelected,
+    conjugation,
+    responseText,
+    listFavourites,
+    searchVerbs,
+    verbSelection,
+    addFavourite,
+    removeFavourite,
   };
   return (
     <ConjugationContext.Provider value={conjugationContextValue}>

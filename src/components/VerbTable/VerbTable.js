@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import Table from 'react-bootstrap/Table';
 import './VerbTable.css';
 import { ConjugationContext } from '../../store/conjugation-context';
@@ -25,6 +25,7 @@ const VerbTable = () => {
     subjunctive_future,
     subjunctive_futureperfect,
   } = conjugation;
+
   return (
     <div className="verbContainer">
       <h6>Indicative</h6>
