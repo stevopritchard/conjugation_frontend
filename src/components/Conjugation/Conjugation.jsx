@@ -1,40 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useContext } from 'react';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import VerbTable from '../VerbTable/VerbTable';
 import './Conjugation.css';
+import { ConjugationContext } from '../../store/conjugation-context';
 
-function Conjugation({
-  infinitive,
-  gerund,
-  past_participle,
-  indicative_present,
-  indicative_presentperfect,
-  indicative_preterite,
-  indicative_imperfect,
-  indicative_pastperfect,
-  indicative_conditional,
-  indicative_conditionalperfect,
-  indicative_future,
-  indicative_futureperfect,
-  imperative_affirmative,
-  imperative_negative,
-  subjunctive_present,
-  subjunctive_presentperfect,
-  subjunctive_pastperfect,
-  subjunctive_imperfect,
-  subjunctive_future,
-  subjunctive_futureperfect,
-  addFavourite,
-  removeFavourite,
-  id,
-  favourites,
-}) {
+function Conjugation({ id }) {
+  const {
+    favourites,
+    conjugation,
+    responseText,
+    addFavourite,
+    removeFavourite,
+  } = useContext(ConjugationContext);
+
   const [isFavourite, setIsFavourite] = useState(false);
 
+  const checkFavourites = useCallback(
+    function checkFavourites(verb) {
+      return conjugation.infinitive === verb;
+    },
+    [conjugation.infinitive]
+  );
+
   useEffect(() => {
-    fetch('https://rocky-citadel-06291.herokuapp.com/check_favourite', {
+    fetch('http://localhost:3001/check_favourite', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -43,17 +34,13 @@ function Conjugation({
     })
       .then((response) => response.json())
       .then((favouritesList) => {
-        if (favourites != null) {
+        if (favourites !== null) {
           favouritesList.some(checkFavourites)
             ? setIsFavourite(true)
             : setIsFavourite(false);
         }
       });
-  }, [id, favourites]);
-
-  function checkFavourites(verb) {
-    return this.props.infinitive === verb;
-  }
+  }, [id, favourites, checkFavourites]);
 
   function makeFavourite(verb, id) {
     if (isFavourite === true) {
@@ -66,7 +53,7 @@ function Conjugation({
   }
 
   const styles = {
-    starStyle: { color: this.state.isFavourite ? 'gold' : 'grey' },
+    starStyle: { color: isFavourite ? 'gold' : 'grey' },
   };
 
   const { starStyle } = styles;
@@ -74,44 +61,32 @@ function Conjugation({
   return (
     <Card className="conjugation">
       <Card.Body>
-        <Card.Title>{infinitive}</Card.Title>
+        <Card.Title>{conjugation.infinitive}</Card.Title>
+        <p
+          style={{ pointerEvents: 'none', color: 'tomato', fontSize: '0.75em' }}
+        >
+          {responseText}
+        </p>
         <Row>
           <Col xs={11} sm={11} md={11} xl={11} lg={11}>
             <Card.Subtitle className="mb-2">
-              Present Participle: {gerund.gerund} - {gerund.gerund_english}
+              Present Participle: {conjugation.gerund.gerund} -{' '}
+              {conjugation.gerund.gerund_english}
             </Card.Subtitle>
             <Card.Subtitle className="mb-2">
-              Past Participle: {past_participle.pastparticiple} -{' '}
-              {past_participle.pastparticiple_english}
+              Past Participle: {conjugation.past_participle.pastparticiple} -{' '}
+              {conjugation.past_participle.pastparticiple_english}
             </Card.Subtitle>
           </Col>
           <Col xs={1} sm={1} md={1} xl={1} lg={1}>
             <i
               className="fas fa-star"
               style={starStyle}
-              onClick={() => makeFavourite(infinitive, id)}
+              onClick={() => makeFavourite(conjugation.infinitive, id)}
             ></i>
           </Col>
         </Row>
-        <VerbTable
-          indicative_present={indicative_present}
-          indicative_presentperfect={indicative_presentperfect}
-          indicative_preterite={indicative_preterite}
-          indicative_imperfect={indicative_imperfect}
-          indicative_pastperfect={indicative_pastperfect}
-          indicative_conditional={indicative_conditional}
-          indicative_conditionalperfect={indicative_conditionalperfect}
-          indicative_future={indicative_future}
-          indicative_futureperfect={indicative_futureperfect}
-          imperative_affirmative={imperative_affirmative}
-          imperative_negative={imperative_negative}
-          subjunctive_present={subjunctive_present}
-          subjunctive_presentperfect={subjunctive_presentperfect}
-          subjunctive_pastperfect={subjunctive_pastperfect}
-          subjunctive_imperfect={subjunctive_imperfect}
-          subjunctive_future={subjunctive_future}
-          subjunctive_futureperfect={subjunctive_futureperfect}
-        />
+        <VerbTable />
       </Card.Body>
     </Card>
   );

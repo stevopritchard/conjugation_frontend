@@ -10,6 +10,7 @@ import { Practise } from './containers/Practise';
 import { SignIn } from './components/SignIn';
 import { Register } from './components/Register';
 import AuthContextProvider from './store/auth-context';
+import ConjugationContextProvider from './store/conjugation-context';
 import './App.css';
 
 const initialUserState = {
@@ -55,7 +56,9 @@ function App() {
             {
               path: '/',
               element: user.id ? (
-                <Reference id={user.id} favourites={user.favourites} />
+                <ConjugationContextProvider>
+                  <Reference id={user.id} favourites={user.favourites} />
+                </ConjugationContextProvider>
               ) : (
                 <Navigate to="/signin" replace />
               ),
@@ -63,7 +66,9 @@ function App() {
             {
               path: '/reference',
               element: user.id ? (
-                <Reference id={user.id} favourites={user.favourites} />
+                <ConjugationContextProvider>
+                  <Reference id={user.id} favourites={user.favourites} />
+                </ConjugationContextProvider>
               ) : (
                 <Navigate to="/signin" replace />
               ),
