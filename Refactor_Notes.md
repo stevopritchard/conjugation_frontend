@@ -103,3 +103,29 @@
 ### Notes
 
 -
+
+## Reference: Router Loader - [Nov 25, 2025]
+
+### Problems Found
+
+- Though `listFavourites` uses the `fetch` API to make requests to the server, it is also a state-updating function. Therefore replacing `useEffect` with loader would require that some of the logic in `listFavourites` be split out, as the loader cannot access state directly.
+- The loader cannot access context, requiring that either the loader has a more limited function and passes data into context, or that logic context is moved into the loader
+
+-
+
+### Questions
+
+-
+
+### Decisions
+
+- Keeping `listFavourites` in context makes sense. The architectural changes required to incoporate a loader for the purposes of setting favourites invite scope creep.
+- I have also decided not to proceed with using a loader in the Conjugation component. As with `listFavourites`, state will need to be modified, requiring that logic be split out.
+
+### Blockers
+
+-
+
+### Notes
+
+-
