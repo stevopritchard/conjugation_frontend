@@ -1,95 +1,99 @@
-import React from 'react';
-import Header from './components/Header/Header';
-import {Reference} from './containers/Reference';
-import {Practise} from './containers/Practise';
-import {SignIn} from './components/SignIn';
-import {Register} from './components/Register';
+import { useState, useMemo } from 'react';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from 'react-router-dom';
+import RootLayout from './containers/RootLayout/RootLayout';
+import { Reference } from './containers/Reference';
+import { Practise } from './containers/Practise';
+import { SignIn } from './components/SignIn';
+import { Register } from './components/Register';
+import AuthContextProvider from './store/auth-context';
+import ConjugationContextProvider from './store/conjugation-context';
 import './App.css';
 
-class App extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      route: "signin",
-      signedIn: false,
-      mode: 'reference',
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        favourites: [],
-        joined: ''
-      }
-    };
-  }
-
-  onRouteChange = ( route ) => {
-      
-    this.setState({route: route})
-    if(route === 'signin' || route === 'register') {
-      this.setState({signedIn: false})
-    } else if(route === 'home'){
-      this.setState({signedIn: true})
-    }
-  }
-
-  onModeChange = (mode) => {
-    this.setState({mode: mode})
-  }
-
-  loadUser = (user) => {
-    this.setState({
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        favourites: user.favourites,
-        joined: user.joined
-      }
-    })
-  }
-  
-
-  render() {
-    const { 
-      route,
-      mode
-    } = this.state;
-    return (
-      <div className="App">
-        <Header 
-          isSignedIn={this.state.signedIn} 
-          routeChange={this.onRouteChange}
-          modeChange={this.onModeChange}
-        />
-        { route === 'home'
-          ?
-          ( mode === 'reference'
-            ?
-            <Reference
-              id={this.state.user.id}
-              favourites={this.state.user.favourites}
-            />
-            :
-            <Practise />
-          )
-          : 
-          ( route ==='signin' 
-            ?
-            <SignIn 
-              routeChange={this.onRouteChange}
-              loadUser={this.loadUser}
-            />
-            :
-            <Register 
-              routeChange={this.onRouteChange}
-              loadUser={this.loadUser}
-            />
-          )
-        }
-      </div>
-    )
-  }
+const initialUserState = {
+  id: '',
+  name: '',
+  email: '',
+  favourites: [],
+  joined: '',
 };
+
+function App() {
+  const [user, setUser] = useState(initialUserState);
+
+  function loadUser(user) {
+    setUser({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      favourites: user.favourites,
+      joined: user.joined,
+    });
+  }
+
+  function signOut() {
+    setUser(initialUserState);
+  }
+
+  const router = useMemo(
+    () =>
+      createBrowserRouter([
+        {
+          path: '/',
+          element: <RootLayout user={user} signOut={signOut} />,
+          children: [
+            {
+              path: '/signin',
+              element: <SignIn loadUser={loadUser} />,
+            },
+            {
+              path: '/register',
+              element: <Register loadUser={loadUser} />,
+            },
+            {
+              path: '/',
+              element: user.id ? (
+                <ConjugationContextProvider>
+                  <Reference id={user.id} favourites={user.favourites} />
+                </ConjugationContextProvider>
+              ) : (
+                <Navigate to="/signin" replace />
+              ),
+            },
+            {
+              path: '/reference',
+              element: user.id ? (
+                <ConjugationContextProvider>
+                  <Reference id={user.id} favourites={user.favourites} />
+                </ConjugationContextProvider>
+              ) : (
+                <Navigate to="/signin" replace />
+              ),
+            },
+            {
+              path: '/practise',
+              element: user.id ? (
+                <Practise />
+              ) : (
+                <Navigate to="/signin" replace />
+              ),
+            },
+          ],
+        },
+      ]),
+    [user]
+  );
+
+  return (
+    <div className="App">
+      <AuthContextProvider>
+        <RouterProvider router={router} />
+      </AuthContextProvider>
+    </div>
+  );
+}
 
 export default App;

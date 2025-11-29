@@ -1,69 +1,42 @@
-import React from 'react';
-import {Userform} from '../Userform'
+import { useContext } from 'react';
+import { Userform } from '../Userform';
+import { AuthContext } from '../../store/auth-context';
+import { useNavigate } from 'react-router-dom';
 
-class SignIn extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            signInEmail: "",
-            signInPassword: "",
-            responseText: ""
-        }
-    }
+function SignIn({ loadUser }) {
+  const {
+    formInputData,
+    responseText,
+    loading,
+    handleInputChange,
+    submitForm,
+  } = useContext(AuthContext);
+  let navigate = useNavigate();
 
-    onEmailChange = (event) => {
-        this.setState({signInEmail: event.target.value})
-    }
-
-    onPasswordChange = (event) => {
-        this.setState({signInPassword: event.target.value})
-    }
-
-    onSubmitSignIn = () => {
-        const { signInEmail, signInPassword } = this.state;
-        fetch('https://rocky-citadel-06291.herokuapp.com/signin', {
-            method: 'post',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-              email: signInEmail,
-              password: signInPassword
-            })
-        })
-        .then(response => response.json())
-        .then(user => {if(user.id) {
-            this.props.loadUser(user)
-            this.props.routeChange("home");
-            }
-        })
-        .catch(err => console.log(err))
-    }
-
-    render(){
-        const { routeChange } = this.props;
-        return(
-            <Userform 
-                cardTitle = {"Sign In"}
-                formGroup = {[
-                    {
-                        controlId: "formBasicEmail",
-                        type: "email",
-                        placeholder: "Enter email",
-                        onChange: this.onEmailChange
-                    },
-                    {
-                        controlId: "formBasicPassword",
-                        type: "password",
-                        placeholder: "Password",
-                        onChange: this.onPasswordChange
-
-                    }
-                ]}
-                onSubmitFunction = {this.onSubmitSignIn}
-                buttonTitle = {"Sign In"}
-                routeChangeFunction = {routeChange}
-            />
-        )
-    }
+  return (
+    <Userform
+      cardTitle={'Sign In'}
+      formGroup={[
+        {
+          controlId: 'formBasicEmail',
+          type: 'email',
+          placeholder: 'Enter email',
+          onChange: handleInputChange('email'),
+          value: formInputData.email,
+        },
+        {
+          controlId: 'formBasicPassword',
+          type: 'password',
+          placeholder: 'Password',
+          onChange: handleInputChange('password'),
+          value: formInputData.password,
+        },
+      ]}
+      responseText={loading ? 'Checking your info...' : responseText}
+      onSubmitFunction={() => submitForm('signin', loadUser, navigate)}
+      buttonTitle={'Sign In'}
+    />
+  );
 }
 
-export default SignIn
+export default SignIn;
