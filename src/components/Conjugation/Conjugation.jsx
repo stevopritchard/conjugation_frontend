@@ -70,12 +70,12 @@ function Conjugation({ id }) {
         <Row>
           <Col xs={11} sm={11} md={11} xl={11} lg={11}>
             <Card.Subtitle className="mb-2">
-              Present Participle: {conjugation.gerund.gerund} -{' '}
-              {conjugation.gerund.gerund_english}
+              Present Participle: {conjugation.gerund} -{' '}
+              {conjugation.gerund_english}
             </Card.Subtitle>
             <Card.Subtitle className="mb-2">
-              Past Participle: {conjugation.past_participle.pastparticiple} -{' '}
-              {conjugation.past_participle.pastparticiple_english}
+              Past Participle: {conjugation.past_participle} -{' '}
+              {conjugation.past_participle_english}
             </Card.Subtitle>
           </Col>
           <Col xs={1} sm={1} md={1} xl={1} lg={1}>
