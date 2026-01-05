@@ -50,7 +50,7 @@ export default function AuthContextProvider({ children }) {
       body[field] = formInputData[field];
     });
     const errorType = config.errorMessage;
-    fetch(`http://localhost:3001${config.endpoint}`, {
+    fetch(`http://localhost:3001/api/auth${config.endpoint}`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

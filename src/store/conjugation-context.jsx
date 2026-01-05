@@ -45,11 +45,14 @@ export default function ConjugationContextProvider({ children }) {
 
   const listFavourites = useCallback(async function listFavourites(id) {
     try {
-      const response = await fetch('http://localhost:3001/check_favourite', {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
+      const response = await fetch(
+        'http://localhost:3001/api/check_favourite',
+        {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -65,7 +68,7 @@ export default function ConjugationContextProvider({ children }) {
       setFavourites(favoriteInfinitives);
 
       const verbPromises = favoriteInfinitives.map((infinitive) =>
-        fetch('http://localhost:3001/favourite_verbs', {
+        fetch('http://localhost:3001/api/favourite_verbs', {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ infinitive }),
@@ -84,7 +87,7 @@ export default function ConjugationContextProvider({ children }) {
   function searchVerbs(id) {
     setVerbSelected(false);
     if (searchfield !== '') {
-      fetch('http://localhost:3001/infinitive', {
+      fetch('http://localhost:3001/api/verb/search', {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -114,71 +117,56 @@ export default function ConjugationContextProvider({ children }) {
   function verbSelection(selection, verb) {
     setVerbSelected(selection);
     if (selection === true) {
-      const tenses = [
-        'http://localhost:3001/gerund',
-        'http://localhost:3001/past_participle',
-        'http://localhost:3001/indicative_present',
-        'http://localhost:3001/indicative_presentperfect',
-        'http://localhost:3001/indicative_preterite',
-        'http://localhost:3001/indicative_imperfect',
-        'http://localhost:3001/indicative_pastperfect',
-        'http://localhost:3001/indicative_conditional',
-        'http://localhost:3001/indicative_conditionalperfect',
-        'http://localhost:3001/indicative_future',
-        'http://localhost:3001/indicative_futureperfect',
-        'http://localhost:3001/imperative_affirmative',
-        'http://localhost:3001/imperative_negative',
-        'http://localhost:3001/subjunctive_present',
-        'http://localhost:3001/subjunctive_presentperfect',
-        'http://localhost:3001/subjunctive_pastperfect',
-        'http://localhost:3001/subjunctive_imperfect',
-        'http://localhost:3001/subjunctive_future',
-        'http://localhost:3001/subjunctive_futureperfect',
-      ];
-      Promise.all(
-        tenses.map(async function (tense) {
-          return fetch(tense, {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              infinitive: verb,
-            }),
-          }).then((response) => {
-            if (!response.ok) {
-              if (response.status === 404) {
-                throw new Error('One or more conjugations not found');
-              }
-              if (response.status === 500) {
-                throw new Error('Server error, please try again');
-              }
-              throw new Error('Conjugation failed');
+      fetch('http://localhost:3001/api/verb/conjugation', {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          infinitive: verb,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            if (response.status === 404) {
+              throw new Error('One or more conjugations not found');
             }
-            return Promise.resolve(response.json());
-          }); //Promise.resolve required to return map array
+            if (response.status === 500) {
+              throw new Error('Server error, please try again');
+            }
+            throw new Error('Conjugation failed');
+          }
+          return Promise.resolve(response.json());
         })
-      )
-        .then((tenses) => {
+        .then((conjugatedVerb) => {
           setConjugation({
             infinitive: verb,
-            gerund: tenses[0],
-            past_participle: tenses[1],
-            indicative_present: tenses[2],
-            indicative_presentperfect: tenses[3],
-            indicative_preterite: tenses[4],
-            indicative_imperfect: tenses[5],
-            indicative_pastperfect: tenses[6],
-            indicative_conditional: tenses[7],
-            indicative_conditionalperfect: tenses[8],
-            indicative_future: tenses[9],
-            indicative_futureperfect: tenses[10],
-            imperative_affirmative: tenses[11],
-            imperative_negative: tenses[12],
-            subjunctive_present: tenses[13],
-            subjunctive_presentperfect: tenses[14],
-            subjunctive_pastperfect: tenses[15],
-            subjunctive_imperfect: tenses[16],
-            subjunctive_future: tenses[17],
-            subjunctive_futureperfect: tenses[18],
+            gerund: conjugatedVerb.gerund,
+            gerund_english: conjugatedVerb.gerund_english,
+            past_participle: conjugatedVerb.past_participle,
+            past_participle_english: conjugatedVerb.past_participle_english,
+            indicative_present: conjugatedVerb.indicative['Presente'],
+            indicative_presentperfect:
+              conjugatedVerb.indicative['Presente perfecto'],
+            indicative_preterite: conjugatedVerb.indicative['Pretérito'],
+            indicative_imperfect: conjugatedVerb.indicative['Imperfecto'],
+            indicative_pastperfect:
+              conjugatedVerb.indicative['Pluscuamperfecto'],
+            indicative_conditional: conjugatedVerb.indicative['Condicional'],
+            indicative_conditionalperfect:
+              conjugatedVerb.indicative['Condicional perfecto'],
+            indicative_future: conjugatedVerb.indicative['Futuro'],
+            indicative_futureperfect:
+              conjugatedVerb.indicative['Futuro perfecto'],
+            imperative_affirmative: conjugatedVerb.imperative['affirmative'],
+            imperative_negative: conjugatedVerb.imperative['negative'],
+            subjunctive_present: conjugatedVerb.subjunctive['Presente'],
+            subjunctive_presentperfect:
+              conjugatedVerb.subjunctive['Presente perfecto'],
+            subjunctive_pastperfect:
+              conjugatedVerb.subjunctive['Pluscuamperfecto'],
+            subjunctive_imperfect: conjugatedVerb.subjunctive['Imperfecto'],
+            subjunctive_future: conjugatedVerb.subjunctive['Futuro'],
+            subjunctive_futureperfect:
+              conjugatedVerb.subjunctive['Futuro perfecto'],
           });
         })
         .catch((err) => setResponseText(err.message));
@@ -187,7 +175,7 @@ export default function ConjugationContextProvider({ children }) {
 
   async function addFavourite(verb, id) {
     try {
-      const response = await fetch('http://localhost:3001/add_favourite', {
+      const response = await fetch('http://localhost:3001/api/add_favourite', {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ infinitive: verb, id }),
@@ -203,11 +191,14 @@ export default function ConjugationContextProvider({ children }) {
 
   async function removeFavourite(verb, id) {
     try {
-      const response = await fetch('http://localhost:3001/remove_favourite', {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ infinitive: verb, id }),
-      });
+      const response = await fetch(
+        'http://localhost:3001/api/remove_favourite',
+        {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ infinitive: verb, id }),
+        }
+      );
 
       if (!response.ok) throw new Error('Failed to add favorite');
 
