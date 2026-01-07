@@ -1,10 +1,18 @@
-import React from 'react';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import './Question.css';
+
+interface QuestionProps {
+  questionNumber: number;
+  nextQuestion: (answer: number) => void;
+  quit: (selection: boolean) => void;
+  conjugation: Record<string, string>;
+  score: number;
+  errorText: string;
+}
 
 const Question = ({
   questionNumber,
@@ -13,8 +21,8 @@ const Question = ({
   conjugation,
   score,
   errorText,
-}) => {
-  const pronouns = {
+}: QuestionProps) => {
+  const pronouns: Record<string, string> = {
     form_1s: 'Yo',
     form_2s: 'Tú',
     form_3s: 'Él/Ella/Ud.',
@@ -29,7 +37,7 @@ const Question = ({
   var correctPronoun = pronouns[correctForm];
   var answer = 0;
 
-  const checked = (e) => {
+  const checked = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.id === correctForm) {
       answer = 1;
     }
