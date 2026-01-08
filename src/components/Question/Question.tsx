@@ -1,9 +1,19 @@
+import { useEffect, useState, useMemo } from 'react';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import './Question.css';
+
+const PRONOUNS: Record<string, string> = {
+  form_1s: 'Yo',
+  form_2s: 'Tú',
+  form_3s: 'Él/Ella/Ud.',
+  form_1p: 'Nosotros',
+  form_2p: 'Vosostros',
+  form_3p: 'Ellos/Ellas/Uds.',
+};
 
 interface QuestionProps {
   questionNumber: number;
@@ -22,43 +32,31 @@ const Question = ({
   score,
   errorText,
 }: QuestionProps) => {
-  const pronouns: Record<string, string> = {
-    form_1s: 'Yo',
-    form_2s: 'Tú',
-    form_3s: 'Él/Ella/Ud.',
-    form_1p: 'Nosotros',
-    form_2p: 'Vosostros',
-    form_3p: 'Ellos/Ellas/Uds.',
-  };
-  var buttons = document.getElementsByTagName('input');
-  var forms = Object.keys(conjugation).filter((form) => form !== 'infinitive');
-  var randNum = Math.floor(Math.random() * forms.length);
-  var correctForm = forms[randNum];
-  var correctPronoun = pronouns[correctForm];
-  var answer = 0;
+  const [correctPronoun, setCorrectPronoun] = useState('');
+  const [correctForm, setCorrectForm] = useState('');
+  const [selectedForm, setSelectedForm] = useState('');
 
-  const checked = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.id === correctForm) {
-      answer = 1;
-    }
-  };
+  const forms = useMemo(
+    () => Object.keys(conjugation).filter((form) => form !== 'infinitive'),
+    [conjugation]
+  );
 
-  function uncheckButtons() {
-    for (let i = 0; i < buttons.length; i++) {
-      buttons[i].checked = false;
-    }
-  }
+  useEffect(() => {
+    const randNum = Math.floor(Math.random() * forms.length);
+    var randomForm = forms[randNum];
+    setCorrectForm(randomForm);
+    setCorrectPronoun(PRONOUNS[randomForm]);
+  }, [forms]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedForm(e.target.id);
+  };
 
   function submitAnswer() {
-    let checkedButtons = 0;
-    for (let i = 0; i < buttons.length; i++) {
-      if (buttons[i].checked) {
-        checkedButtons += 1;
-      }
-    }
-    if (checkedButtons > 0) {
-      uncheckButtons();
+    if (selectedForm) {
+      const answer = selectedForm === correctForm ? 1 : 0;
       nextQuestion(answer);
+      setSelectedForm('');
     }
   }
 
@@ -82,7 +80,8 @@ const Question = ({
               name="multipleChoice"
               id={forms[0]}
               label={conjugation[forms[0]]}
-              onChange={checked}
+              checked={selectedForm === forms[0]}
+              onChange={handleChange}
             />
           </Col>
           <Col
@@ -97,7 +96,8 @@ const Question = ({
               name="multipleChoice"
               id={forms[1]}
               label={conjugation[forms[1]]}
-              onChange={checked}
+              checked={selectedForm === forms[1]}
+              onChange={handleChange}
             />
           </Col>
         </Row>
@@ -114,7 +114,8 @@ const Question = ({
               name="multipleChoice"
               id={forms[2]}
               label={conjugation[forms[2]]}
-              onChange={checked}
+              checked={selectedForm === forms[2]}
+              onChange={handleChange}
             />
           </Col>
           <Col
@@ -129,7 +130,8 @@ const Question = ({
               name="multipleChoice"
               id={forms[3]}
               label={conjugation[forms[3]]}
-              onChange={checked}
+              checked={selectedForm === forms[3]}
+              onChange={handleChange}
             />
           </Col>
         </Row>
