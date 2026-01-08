@@ -25,7 +25,7 @@ function Conjugation({ id }) {
   );
 
   useEffect(() => {
-    fetch('http://localhost:3001/check_favourite', {
+    fetch('http://localhost:3001/api/check_favourite', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
