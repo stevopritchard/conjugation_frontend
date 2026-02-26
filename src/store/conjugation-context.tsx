@@ -1,28 +1,108 @@
-import { createContext, useState, useCallback } from 'react';
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useState,
+  useCallback,
+} from 'react';
 
-export const ConjugationContext = createContext({
+type ConjugationType = {
+  infinitive: string;
+  gerund: string;
+  gerund_english: string;
+  past_participle: string;
+  past_participle_english: string;
+  indicative_present: string[];
+  indicative_presentperfect: string[];
+  indicative_preterite: string[];
+  indicative_imperfect: string[];
+  indicative_pastperfect: string[];
+  indicative_conditional: string[];
+  indicative_conditionalperfect: string[];
+  indicative_future: string[];
+  indicative_futureperfect: string[];
+  imperative_affirmative: string[];
+  imperative_negative: string[];
+  subjunctive_present: string[];
+  subjunctive_presentperfect: string[];
+  subjunctive_pastperfect: string[];
+  subjunctive_imperfect: string[];
+  subjunctive_future: string[];
+  subjunctive_futureperfect: string[];
+};
+
+type favouriteVerbType = {
+  infinitive: string;
+  infinitive_english: string;
+};
+
+type ConjugationContextType = {
+  setSearchfield: Dispatch<SetStateAction<string>>;
+  favourites: string[];
+  filteredVerbs: favouriteVerbType[];
+  verbSelected: boolean;
+  conjugation: ConjugationType;
+  responseText: string;
+  listFavourites: (id: string) => Promise<void>;
+  searchVerbs: (id: string) => void;
+  verbSelection: (selection: boolean, verb: string) => void;
+  addFavourite: (verb: string, id: string) => Promise<void>;
+  removeFavourite: (verb: string, id: string) => Promise<void>;
+};
+
+export const ConjugationContext = createContext<ConjugationContextType>({
   setSearchfield: () => {},
   favourites: [],
   filteredVerbs: [],
-  verbSelected: Boolean,
-  conjugation: {},
-  responseText: String,
-  listFavourites: () => {},
-  searchVerbs: () => {},
-  verbSelection: () => {},
-  addFavourite: () => {},
-  removeFavourite: () => {},
+  verbSelected: false,
+  conjugation: {
+    infinitive: '',
+    gerund: '',
+    gerund_english: '',
+    past_participle: '',
+    past_participle_english: '',
+    indicative_present: [],
+    indicative_presentperfect: [],
+    indicative_preterite: [],
+    indicative_imperfect: [],
+    indicative_pastperfect: [],
+    indicative_conditional: [],
+    indicative_conditionalperfect: [],
+    indicative_future: [],
+    indicative_futureperfect: [],
+    imperative_affirmative: [],
+    imperative_negative: [],
+    subjunctive_present: [],
+    subjunctive_presentperfect: [],
+    subjunctive_pastperfect: [],
+    subjunctive_imperfect: [],
+    subjunctive_future: [],
+    subjunctive_futureperfect: [],
+  },
+  responseText: '',
+  // using underscore to denote 'intentionally unused' to prevent linter warnings
+  listFavourites: (_id: string) => Promise.resolve(),
+  searchVerbs: (_id: string) => {},
+  verbSelection: (_selection: boolean, _verb: string) => {},
+  addFavourite: async (_verb: string, _id: string) => {},
+  removeFavourite: async (_verb: string, _id: string) => {},
 });
 
-export default function ConjugationContextProvider({ children }) {
+export default function ConjugationContextProvider({
+  children,
+}: {
+  children: React.JSX.Element;
+}) {
   const [searchfield, setSearchfield] = useState('');
-  const [favourites, setFavourites] = useState([]);
-  const [filteredVerbs, setFilteredVerbs] = useState([]);
+  const [favourites, setFavourites] = useState<string[]>([]);
+  const [filteredVerbs, setFilteredVerbs] = useState<favouriteVerbType[]>([]);
   const [verbSelected, setVerbSelected] = useState(false);
   const [conjugation, setConjugation] = useState({
     infinitive: '',
     gerund: '',
+    gerund_english: '',
     past_participle: '',
+    past_participle_english: '',
     indicative_present: [],
     indicative_presentperfect: [],
     indicative_preterite: [],
@@ -43,7 +123,7 @@ export default function ConjugationContextProvider({ children }) {
   });
   const [responseText, setResponseText] = useState('');
 
-  const listFavourites = useCallback(async function listFavourites(id) {
+  const listFavourites = useCallback(async function listFavourites(id: string) {
     try {
       const response = await fetch(
         'http://localhost:3001/api/check_favourite',
@@ -67,7 +147,7 @@ export default function ConjugationContextProvider({ children }) {
       const favoriteInfinitives = await response.json();
       setFavourites(favoriteInfinitives);
 
-      const verbPromises = favoriteInfinitives.map((infinitive) =>
+      const verbPromises = favoriteInfinitives.map((infinitive: string) =>
         fetch('http://localhost:3001/api/favourite_verbs', {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
@@ -75,16 +155,20 @@ export default function ConjugationContextProvider({ children }) {
         }).then((res) => res.json())
       );
 
-      const verbs = await Promise.all(verbPromises);
+      const verbs: favouriteVerbType[] = await Promise.all(verbPromises);
       setFilteredVerbs(verbs);
     } catch (err) {
-      console.error(err.message);
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.log(`An unexpected error occurred: ${err}`);
+      }
       // will be logged to the console;
       // user will simply not see any favourites
     }
   }, []);
 
-  function searchVerbs(id) {
+  function searchVerbs(id: string) {
     setVerbSelected(false);
     if (searchfield !== '') {
       fetch('http://localhost:3001/api/verb/search', {
@@ -107,14 +191,20 @@ export default function ConjugationContextProvider({ children }) {
           return response.json();
         })
         .then((data) => setFilteredVerbs(data))
-        .catch((err) => console.log(err.message));
+        .catch((err) => {
+          if (err instanceof Error) {
+            console.error(err.message);
+          } else {
+            console.log(`An unexpected error occurred: ${err}`);
+          }
+        });
     } else {
       setFilteredVerbs([]);
       listFavourites(id);
     }
   }
 
-  function verbSelection(selection, verb) {
+  function verbSelection(selection: boolean, verb: string) {
     setVerbSelected(selection);
     if (selection === true) {
       fetch('http://localhost:3001/api/verb/conjugation', {
@@ -134,7 +224,7 @@ export default function ConjugationContextProvider({ children }) {
             }
             throw new Error('Conjugation failed');
           }
-          return Promise.resolve(response.json());
+          return response.json();
         })
         .then((conjugatedVerb) => {
           setConjugation({
@@ -169,11 +259,17 @@ export default function ConjugationContextProvider({ children }) {
               conjugatedVerb.subjunctive['Futuro perfecto'],
           });
         })
-        .catch((err) => setResponseText(err.message));
+        .catch((err) => {
+          if (err instanceof Error) {
+            setResponseText(err.message);
+          } else {
+            setResponseText(`An unexpected error occurred: ${err}`);
+          }
+        });
     }
   }
 
-  async function addFavourite(verb, id) {
+  async function addFavourite(verb: string, id: string) {
     try {
       const response = await fetch('http://localhost:3001/api/add_favourite', {
         method: 'post',
@@ -185,11 +281,15 @@ export default function ConjugationContextProvider({ children }) {
 
       await listFavourites(id); // Reload favorites
     } catch (err) {
-      setResponseText(err.message);
+      if (err instanceof Error) {
+        setResponseText(err.message);
+      } else {
+        setResponseText(`An unexpected error occurred: ${err}`);
+      }
     }
   }
 
-  async function removeFavourite(verb, id) {
+  async function removeFavourite(verb: string, id: string) {
     try {
       const response = await fetch(
         'http://localhost:3001/api/remove_favourite',
@@ -204,7 +304,11 @@ export default function ConjugationContextProvider({ children }) {
 
       await listFavourites(id); // Reload favorites
     } catch (err) {
-      setResponseText(err.message);
+      if (err instanceof Error) {
+        setResponseText(err.message);
+      } else {
+        setResponseText(`An unexpected error occurred: ${err}`);
+      }
     }
   }
 

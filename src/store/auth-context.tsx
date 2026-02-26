@@ -1,18 +1,42 @@
-import { createContext, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useState } from 'react';
+import { NavigateFunction } from 'react-router-dom';
 
-export const AuthContext = createContext({
+type FormInputDataType = {
+  [prop: string]: string;
+};
+
+type AuthContextType = {
+  formInputData: FormInputDataType;
+  responseText: string;
+  setResponseText: Dispatch<SetStateAction<string>>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  handleInputChange: (fieldName: string) => void;
+  submitForm: (
+    formType: 'register' | 'signin',
+    loadUser: (user: {}) => void,
+    navigate: NavigateFunction
+  ) => void;
+  resetForm: () => void;
+};
+
+export const AuthContext = createContext<AuthContextType>({
   formInputData: {},
-  responseText: String,
+  responseText: '',
   setResponseText: () => {},
-  loading: Boolean,
+  loading: false,
   setLoading: () => {},
   handleInputChange: () => {},
   submitForm: () => {},
   resetForm: () => {},
 });
 
-export default function AuthContextProvider({ children }) {
-  const [formInputData, setFormInputData] = useState({
+export default function AuthContextProvider({
+  children,
+}: {
+  children: React.JSX.Element;
+}) {
+  const [formInputData, setFormInputData] = useState<FormInputDataType>({
     name: '',
     email: '',
     password: '',
@@ -20,8 +44,8 @@ export default function AuthContextProvider({ children }) {
   const [responseText, setResponseText] = useState('');
   const [loading, setLoading] = useState(false);
 
-  function handleInputChange(fieldName) {
-    return function (event) {
+  function handleInputChange(fieldName: string) {
+    return function (event: React.ChangeEvent<HTMLInputElement>) {
       const { value } = event.target;
       setFormInputData((prevState) => ({
         ...prevState,
@@ -33,19 +57,27 @@ export default function AuthContextProvider({ children }) {
   const authConfig = {
     register: {
       endpoint: '/register',
-      fields: ['name', 'email', 'password'],
+      fields: ['name', 'email', 'password'] as const,
       errorMessage: 'Registration',
     },
     signin: {
       endpoint: '/signin',
-      fields: ['email', 'password'],
+      fields: ['email', 'password'] as const,
       errorMessage: 'Sign in',
     },
-  };
+  } as const;
 
-  function submitForm(type, loadUser, navigate) {
-    const config = authConfig[type];
-    const body = {};
+  function submitForm(
+    formType: 'register' | 'signin',
+    loadUser: (user: {}) => void,
+    navigate: NavigateFunction
+  ) {
+    const config = authConfig[formType];
+    const body = config.fields.reduce((acc, field) => {
+      acc[field] = formInputData[field];
+      return acc;
+    }, {} as Record<string, string>);
+
     config.fields.forEach((field) => {
       body[field] = formInputData[field];
     });
@@ -67,7 +99,7 @@ export default function AuthContextProvider({ children }) {
           }
           throw new Error(
             // NEED DIFFERENT MESSAGES FOR REGISTRATION & SIGNIN
-            type === 'registration'
+            formType === 'register'
               ? `${errorType} failed - no user was created`
               : `${errorType} failed - please check your credentials and try again`
           );
