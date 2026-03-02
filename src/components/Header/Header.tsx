@@ -4,14 +4,22 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { AuthContext } from '../../store/auth-context';
 import './Header.css';
+import type { User } from '../../types/user';
 
-const Navigation = ({ user, signOut }) => {
+export default function Navigation({
+  user,
+  signOut,
+}: {
+  user: User;
+  signOut: () => void;
+}) {
   const { resetForm } = useContext(AuthContext);
 
   function resetFormAndSignOut() {
     signOut();
     resetForm();
   }
+
   return (
     <Navbar expand="lg">
       <Navbar.Brand>
@@ -50,6 +58,4 @@ const Navigation = ({ user, signOut }) => {
       )}
     </Navbar>
   );
-};
-
-export default Navigation;
+}

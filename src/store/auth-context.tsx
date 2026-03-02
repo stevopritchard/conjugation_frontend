@@ -1,5 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import { NavigateFunction } from 'react-router-dom';
+import type { User } from '../types/user';
 
 type FormInputDataType = {
   [prop: string]: string;
@@ -14,7 +15,7 @@ type AuthContextType = {
   handleInputChange: (fieldName: string) => void;
   submitForm: (
     formType: 'register' | 'signin',
-    loadUser: (user: {}) => void,
+    loadUser: (user: User) => void,
     navigate: NavigateFunction
   ) => void;
   resetForm: () => void;
@@ -69,7 +70,7 @@ export default function AuthContextProvider({
 
   function submitForm(
     formType: 'register' | 'signin',
-    loadUser: (user: {}) => void,
+    loadUser: (user: User) => void,
     navigate: NavigateFunction
   ) {
     const config = authConfig[formType];
