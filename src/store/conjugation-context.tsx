@@ -5,38 +5,43 @@ import {
   useState,
   useCallback,
 } from 'react';
-
-type ConjugationType = {
-  infinitive: string;
-  gerund: string;
-  gerund_english: string;
-  past_participle: string;
-  past_participle_english: string;
-  indicative_present: string[];
-  indicative_presentperfect: string[];
-  indicative_preterite: string[];
-  indicative_imperfect: string[];
-  indicative_pastperfect: string[];
-  indicative_conditional: string[];
-  indicative_conditionalperfect: string[];
-  indicative_future: string[];
-  indicative_futureperfect: string[];
-  imperative_affirmative: string[];
-  imperative_negative: string[];
-  subjunctive_present: string[];
-  subjunctive_presentperfect: string[];
-  subjunctive_pastperfect: string[];
-  subjunctive_imperfect: string[];
-  subjunctive_future: string[];
-  subjunctive_futureperfect: string[];
-};
+import {
+  ConjugationType,
+  createEmptyConjugationForm,
+  createEmptyImperativeForm,
+} from '../types/conjugation';
 
 type favouriteVerbType = {
   infinitive: string;
   infinitive_english: string;
 };
 
-type ConjugationContextType = {
+const INITIAL_CONJUGATION = {
+  infinitive: '',
+  gerund: '',
+  gerund_english: '',
+  past_participle: '',
+  past_participle_english: '',
+  indicative_present: createEmptyConjugationForm(),
+  indicative_presentperfect: createEmptyConjugationForm(),
+  indicative_preterite: createEmptyConjugationForm(),
+  indicative_imperfect: createEmptyConjugationForm(),
+  indicative_pastperfect: createEmptyConjugationForm(),
+  indicative_conditional: createEmptyConjugationForm(),
+  indicative_conditionalperfect: createEmptyConjugationForm(),
+  indicative_future: createEmptyConjugationForm(),
+  indicative_futureperfect: createEmptyConjugationForm(),
+  imperative_affirmative: createEmptyImperativeForm(),
+  imperative_negative: createEmptyImperativeForm(),
+  subjunctive_present: createEmptyConjugationForm(),
+  subjunctive_presentperfect: createEmptyConjugationForm(),
+  subjunctive_pastperfect: createEmptyConjugationForm(),
+  subjunctive_imperfect: createEmptyConjugationForm(),
+  subjunctive_future: createEmptyConjugationForm(),
+  subjunctive_futureperfect: createEmptyConjugationForm(),
+} satisfies ConjugationType;
+
+export type ConjugationContextType = {
   setSearchfield: Dispatch<SetStateAction<string>>;
   favourites: string[];
   filteredVerbs: favouriteVerbType[];
@@ -55,30 +60,7 @@ export const ConjugationContext = createContext<ConjugationContextType>({
   favourites: [],
   filteredVerbs: [],
   verbSelected: false,
-  conjugation: {
-    infinitive: '',
-    gerund: '',
-    gerund_english: '',
-    past_participle: '',
-    past_participle_english: '',
-    indicative_present: [],
-    indicative_presentperfect: [],
-    indicative_preterite: [],
-    indicative_imperfect: [],
-    indicative_pastperfect: [],
-    indicative_conditional: [],
-    indicative_conditionalperfect: [],
-    indicative_future: [],
-    indicative_futureperfect: [],
-    imperative_affirmative: [],
-    imperative_negative: [],
-    subjunctive_present: [],
-    subjunctive_presentperfect: [],
-    subjunctive_pastperfect: [],
-    subjunctive_imperfect: [],
-    subjunctive_future: [],
-    subjunctive_futureperfect: [],
-  },
+  conjugation: INITIAL_CONJUGATION,
   responseText: '',
   // using underscore to denote 'intentionally unused' to prevent linter warnings
   listFavourites: (_id: string) => Promise.resolve(),
@@ -97,30 +79,7 @@ export default function ConjugationContextProvider({
   const [favourites, setFavourites] = useState<string[]>([]);
   const [filteredVerbs, setFilteredVerbs] = useState<favouriteVerbType[]>([]);
   const [verbSelected, setVerbSelected] = useState(false);
-  const [conjugation, setConjugation] = useState({
-    infinitive: '',
-    gerund: '',
-    gerund_english: '',
-    past_participle: '',
-    past_participle_english: '',
-    indicative_present: [],
-    indicative_presentperfect: [],
-    indicative_preterite: [],
-    indicative_imperfect: [],
-    indicative_pastperfect: [],
-    indicative_conditional: [],
-    indicative_conditionalperfect: [],
-    indicative_future: [],
-    indicative_futureperfect: [],
-    imperative_affirmative: [],
-    imperative_negative: [],
-    subjunctive_present: [],
-    subjunctive_presentperfect: [],
-    subjunctive_pastperfect: [],
-    subjunctive_imperfect: [],
-    subjunctive_future: [],
-    subjunctive_futureperfect: [],
-  });
+  const [conjugation, setConjugation] = useState(INITIAL_CONJUGATION);
   const [responseText, setResponseText] = useState('');
 
   const listFavourites = useCallback(async function listFavourites(id: string) {

@@ -9,7 +9,7 @@
   - [ ] Consider refactoring searchVerbs to be properly async
 - [x] quiz-reducer.jsx
 - [ ] Conjugation.jsx
-- [ ] Header.js
+- [x] Header.js
 - [ ] Question.jsx
 - [ ] Register.jsx / Signin.jsx / Userform.jsx
 - [ ] VerbTable.jsx
@@ -20,9 +20,9 @@
 # Outstanding TODOs
 
 ## auth-context.tsx
-- [ ] Create proper `User` type instead of `{}`
+- [x] Create proper `User` type instead of `{}`
 - [ ] Review whether `Record<string, string>` for `body` is appropriate
-- [ ] Apply User type consistently once created
+- [x] Apply User type consistently once created
 
 ## conjugation-context.tsx
 - [ ] ...
