@@ -5,11 +5,15 @@
   - [ ] Add validation helper function (email/password format)
   - [ ] Ensure validation exists server-side (check backend routes)
 - [x] conjugation-context.tsx
+  - [x] Extract conjugation types to src/types/conjugation.ts
+  - [x] Create helper functions for empty conjugation forms
+  - [x] Refactor default conjugation value to use helpers
   - [ ] Investigate timing dependency in searchVerbs - why does awaiting listFavourites cause sticky searches?
   - [ ] Consider refactoring searchVerbs to be properly async
 - [x] quiz-reducer.jsx
 - [ ] Conjugation.jsx
 - [x] Header.js
+- [x] RootLayout.jsx
 - [ ] Question.jsx
 - [ ] Register.jsx / Signin.jsx / Userform.jsx
 - [ ] VerbTable.jsx
@@ -29,6 +33,21 @@
 
 
 # TypeScript Conversion Notes
+
+## Key Patterns Learned
+- Discriminated unions for reducer actions
+- Type guards with `instanceof`
+- `as const` for literal types
+- Helper functions for DRY object initialization
+- `satisfies` for type-checked constants
+- Empty array vs empty object initialization
+- Shared types in dedicated files
+
+## Common Issues & Solutions
+- `.ts` vs `.tsx` - use `.tsx` for JSX
+- `never[]` inference - annotate empty arrays
+- `unknown` in catch blocks - use type guards
+- Async function signatures - return `Promise<void>`
 
 ## auth-context.tsx - [Feb 10, 2026]
 
@@ -521,6 +540,8 @@ As an extra precaution, I have explicitely assigned a type to `verbs`:
 - There is a hierarchy of types in TypeScript
 - The .tsx file must have the relevant functions and objects imported from their respective libraries in order to discern their types. I think it prompts tsc to access the appropriate type definition file. This occured automatically in auth-context and I didn't notice.
 
+**Update (Mar 04):** See notes from Mar 2 for deeper explanation of why empty arrays work with type annotation vs why empty objects don't. The key distinction: arrays can start empty and have items added; objects with required properties must have all properties at initialization.
+
 ### Open Questions
 
 - How do I handle the inference of the `unknown` type to error objects passed to `catch` blocks? Is there a method to do this that's specific to the fetch API? Do I only need to type the property of the object that access in the statement body?
@@ -562,7 +583,7 @@ See **Solution** for further info.
 
 ### Solution
 
-
+- Used type guards to check that the value is an instance of a class (which would have the property that we want to access).
 5.  ```typescript
     catch (err) {
       if (err instanceof Error) {
@@ -920,6 +941,246 @@ type Action = ActionA | ActionB | ActionC;  // ✅ Only types can do this
   import type { User } from '../../types/user';
   ```
 
+
+### Open Questions
+
+- 
+
+## conjugation-context.tsx (facilitating the conversion of VerbTable.jsx) - [Mar 04, 2026]
+
+### Problems Found
+
+- `VerbTable.tsx` accesses properties on the `conjugation` object that it recieves from `conjugation-context.tsx`.
+- In my prior conversion of `conjugation-context.tsx` I had not set these properties on the initial context value or the initial value for the `conjugation` state object that accesses this context value.
+- After creating `ConjugationType` I created objects (of the same shape as that type) as the initial values of the context value and state object, however these delcarations are long, unwieldy, error-prone, and repeated in the code.
+  ```typescript
+  conjugation: {
+    infinitive: '',
+    gerund: '',
+    gerund_english: '',
+    past_participle: '',
+    past_participle_english: '',
+    indicative_present: {
+      form_1s: '',
+      form_1p: '',
+      form_2s: '',
+      form_2p: '',
+      form_3s: '',
+      form_3p: '',
+    },
+    indicative_presentperfect: {
+      form_1s: '',
+      form_1p: '',
+      form_2s: '',
+      form_2p: '',
+      form_3s: '',
+      form_3p: '',
+    },
+    // repeat for every tense (imperative tenses vary slightly)...
+  }
+  ```
+
+### Research
+
+- 
+
+### Solution
+
+- create a `conjugation.ts` type file that exports helper functions that return an object that safisfies the property types for the tenses in `ConjugationType` (also moved to this file):
+
+`conjugation.ts`
+```typescript
+export type ConjugationType = {
+  //...
+  indicative_present: ConjugationForm;
+  indicative_presentperfect: ConjugationForm;
+  //...
+};
+
+export function createEmptyConjugationForm(): ConjugationForm {
+  return {
+    form_1s: '',
+    form_1p: '',
+    form_2s: '',
+    form_2p: '',
+    form_3s: '',
+    form_3p: '',
+  };
+}
+```
+`conjugation-context.tsx`
+```typescript
+const INITIAL_CONJUGATION = {
+  // ...
+  indicative_present: createEmptyConjugationForm(),
+  indicative_presentperfect: createEmptyConjugationForm(),
+}
+```
+
+### Key Learning
+
+I was unclear on why an empty array is an accepted value where the value returned from `useState` is annotated:
+
+```typescript
+useState<favouriteVerbType[]>([])
+```
+
+This ties back to my notes from 17 - 18 Feb; we have to tell TypeScript to expect aray values if the array will receive them, but array can be empty, initially.
+
+However with objects, all required properties must exist at initialization, even if their values will change later.
+
+#### useState Type Annotation vs Inference
+
+**Empty collections need explicit types:**
+```typescript
+const [items, setItems] = useState([]);
+// Empty array gives no clues - must tell TypeScript what it will hold
+```
+
+**Full objects can use inference:**
+```typescript
+const INITIAL = { prop: '' } satisfies MyType;
+const [state, setState] = useState(INITIAL);
+// TypeScript infers from the object structure
+```
+
+**Why empty arrays work with type annotation:**
+- `[]` is compatible with ANY array type
+- Generic parameter tells TypeScript what the array will hold LATER
+- TypeScript only checks: "Is initial value compatible?" (YES for `[]`)
+
+**Why empty objects DON'T work:**
+- `{}` is NOT compatible with types that require specific properties
+- Missing required properties = type error
+
+
+### Open Questions
+
+- 
+
+## Userform.tsx - [Mar 12, 2026]
+
+### Problems Found
+
+#### Converting component to a function
+- I had left Userform.jsx as a class-based component after refactoring it, but have decided to convert it to a function component today ahead of converting it to TypeScript. The reason for this is that I want to focus on TypeScript patterns for function components and use this project as an opportunity to get comfortable with them before looking at applying TypeScript to legacy component types. Besides, I have converted all of the other components to functions, so this class was a holdover that I should have dealt with.
+
+#### TypeScript conversion
+- I have defined a `FormGroupType` to assign as the type of the `formGroup` prop received by `Userform`:
+  ```typescript
+  type FormGroupType = {
+    controlId: 'formBasicEmail';
+    type: 'text' | 'email' | 'password';
+    placeholder: string;
+    onChange: (fieldName: string) => void;
+    value: string;
+  };
+  // ...
+  function Userform({
+    cardTitle,
+    formGroup,
+    onSubmitFunction,
+    responseText,
+    routeChangeFunction,
+    buttonTitle,
+  }: {
+    cardTitle: string;
+    formGroup: FormGroupType[];
+    onSubmitFunction: () => void;
+    responseText: string;
+    routeChangeFunction: NavigateFunction;
+    buttonTitle: 'Register' | 'Sign-in';
+  })
+  ```
+  The `onChange` prop is the `handleInputChange()` function declared in `auth-context.tsx`, and is of type `(fieldName: string) => void` *however* when assigning this as the type, a type error occurs:
+  
+  ```console
+  Type '(fieldName: string) => void' is not assignable to type 'ChangeEventHandler<FormControlElement>'.
+  ```
+  To remedy this, I switched the type to `onChange: ChangeEventHandler<FormControlElement>` but VSCode's Intellisense cannot readily identify where this type comes from. 
+  So I sought out the type `FormControlElement` and found the type definition file (via Intellisense; I wrote an import statement for that type) and did indeed find an onChange prop with that type:
+  ```typescript
+  export interface FormControlProps extends BsPrefixProps {
+      bsCustomPrefix?: string;
+      htmlSize?: number;
+      size?: 'sm' | 'lg';
+      plaintext?: boolean;
+      readOnly?: boolean;
+      disabled?: boolean;
+      value?: string | string[] | number;
+      onChange?: React.ChangeEventHandler<FormControlElement>;
+      custom?: boolean;
+      type?: string;
+      id?: string;
+      isValid?: boolean;
+      isInvalid?: boolean;
+  }
+  ```
+  However, I cannot access the `onChange` property on this interface via either dot or square bracket notation.
+  
+#### Unused routes() function
+- ```javascript
+  function routes(props) {
+      if (props) {
+          return (
+              <Form.Text onClick = {() => props('register')} className="text-muted">
+                  Register
+              </Form.Text>
+          )
+      }
+  }
+  ```
+  A holdover from the refactored app that is no longer being used.
+
+### Research
+
+- 
+
+### Solution
+
+#### TypeScript conversion
+- Since `FormControlElement` is not imported from the type definition file, I instead decided to look at the definition of the type itself.
+It is defined as `FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;` and I know that Userform only deals with input elements, so I have decided to define `onChange` as `onChange: React.ChangeEventHandler<HTMLInputElement>;`.
+
+#### Unused routes() function
+- Routing is now handled by `react-router-dom`, I have decided to go with Claude's recommendation of an inline expression so that I can use the `useNavigate` hook (which can only be used inside of a function component).
+
+  ```javascript
+  {routeChangeProps && (
+    <Form.Text
+      onClick={() => navigate('/register')}
+      className="text-muted"
+    >
+      Register
+    </Form.Text>
+  )}
+  ```
+
+### Key Learning
+
+**React Event Handler Types:**
+- `React.ChangeEventHandler<T>` is shorthand for `(event: React.ChangeEvent<T>) => void`
+- For input elements: `React.ChangeEventHandler<HTMLInputElement>`
+- This is what React Bootstrap components expect for `onChange` props
+
+**Finding the Right Type:**
+- Check React Bootstrap type definitions (Intellisense helps)
+- Union types like `FormControlElement` can be narrowed to specific types
+- Use the most specific type that matches your use case
+
+**Curried Functions in Context:**
+- `handleInputChange` returns a function: `(fieldName) => (event) => void`
+- When passing to props, you call the outer function: `onChange={handleInputChange('email')}`
+- The returned function matches `React.ChangeEventHandler<HTMLInputElement>`
+
+**Common Pattern:**
+```typescript
+// In context (curried)
+handleInputChange: (fieldName: string) => React.ChangeEventHandler
+
+// When called (returns event handler)
+onChange={handleInputChange('email')}
+```
 
 ### Open Questions
 

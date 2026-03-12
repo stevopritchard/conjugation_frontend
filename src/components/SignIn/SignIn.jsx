@@ -35,6 +35,7 @@ function SignIn({ loadUser }) {
       responseText={loading ? 'Checking your info...' : responseText}
       onSubmitFunction={() => submitForm('signin', loadUser, navigate)}
       buttonTitle={'Sign In'}
+      routeChangeProps={'register'}
     />
   );
 }
