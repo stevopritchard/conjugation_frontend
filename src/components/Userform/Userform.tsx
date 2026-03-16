@@ -49,11 +49,7 @@ function Userform({
         >
           {responseText}
         </p>
-        <Button
-          variant="primary"
-          type="submit"
-          onClick={() => onSubmitFunction()}
-        >
+        <Button variant="primary" type="submit" onClick={onSubmitFunction}>
           {buttonTitle}
         </Button>
         {registerLink && (

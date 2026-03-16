@@ -1185,3 +1185,81 @@ onChange={handleInputChange('email')}
 ### Open Questions
 
 - 
+
+## Userform.tsx - [Mar 16, 2026]
+
+### Problems Found
+
+#### Setting a specific string to `routeChangeProps` makes no sense
+
+- I'm only going to set `routeChangeProps` in the **SignIn** component, yet I'm setting the value as a string ('register') and checking that the variable (not the specific value) exists in Userform:
+  ```typescript
+  {routeChangeProps && (
+    <Form.Text onClick={() => navigate('/register')} className="text-muted">
+      Register
+    </Form.Text>
+  )}
+  ```
+
+#### Userform is coupled to React Router
+
+- more of a design choice than a problem, but it might be worth uncoupling Userform from `react-router-dom` in case want to test it without a Router wrapper
+
+### Research
+
+- 
+
+### Solution
+
+#### Change `routeChangeProp` to `registerLink`
+
+- Variable is now a Boolean, and so the existing check better fits the type and purpose:
+
+  ```typescript
+  {routeChangeProps && (
+    <Form.Text
+      onClick={() => navigate('/register')}
+      className="text-muted"
+    >
+      Register
+    </Form.Text>
+  )}
+  ```
+
+#### Unused routes() function
+
+- Routing is now handled by `react-router-dom`, I have decided to go with Claude's recommendation of an inline expression so that I can use the `useNavigate` hook (which can only be used inside of a function component).
+
+  ```typescript
+  {registerLink && (
+    <Form.Text onClick={() => navigate('/register')} className="text-muted">
+      Register
+    </Form.Text>
+  )}
+  ```
+
+#### `useNavigate` instance now exists within Signin
+
+- Since **Signing** is the only component that requires the link, it makes sense to keep the check inside Userform but instantiate `useNavigate` inside of Signin, where it's used:
+
+  ```typescript
+  {registerLink && (
+    <Form.Text onClick={onRegisterClick} className="text-muted">
+      Register
+    </Form.Text>
+  )}
+  ```
+
+  In Userform.tsx:
+
+  ```typescript
+  onClick={onSubmitFunction}
+  ```
+
+### Key Learning
+
+-
+
+### Open Questions
+
+- 
