@@ -11,7 +11,7 @@ function SignIn({ loadUser }) {
     handleInputChange,
     submitForm,
   } = useContext(AuthContext);
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <Userform
@@ -33,9 +33,10 @@ function SignIn({ loadUser }) {
         },
       ]}
       responseText={loading ? 'Checking your info...' : responseText}
+      onRegisterClick={() => navigate('/register')}
       onSubmitFunction={() => submitForm('signin', loadUser, navigate)}
       buttonTitle={'Sign In'}
-      routeChangeProps={'register'}
+      registerLink={true}
     />
   );
 }

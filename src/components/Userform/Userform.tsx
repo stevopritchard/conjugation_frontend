@@ -2,7 +2,6 @@ import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import FormGroup from 'react-bootstrap/FormGroup';
-import { useNavigate } from 'react-router-dom';
 
 type FormGroupType = {
   controlId: 'formBasicName' | 'formBasicEmail' | 'formBasicPassword';
@@ -17,17 +16,18 @@ function Userform({
   formGroup,
   onSubmitFunction,
   responseText,
-  routeChangeProps,
+  registerLink,
   buttonTitle,
+  onRegisterClick,
 }: {
   cardTitle: 'Sign Up' | 'Sign In';
   formGroup: FormGroupType[];
   onSubmitFunction: () => void;
   responseText: string;
-  routeChangeProps: 'register';
+  registerLink: boolean;
   buttonTitle: 'Register' | 'Sign-in';
+  onRegisterClick: () => void;
 }) {
-  let navigate = useNavigate();
   return (
     <Card style={{ margin: '0 auto' }}>
       <Card.Body>
@@ -56,11 +56,8 @@ function Userform({
         >
           {buttonTitle}
         </Button>
-        {routeChangeProps && (
-          <Form.Text
-            onClick={() => navigate('/register')}
-            className="text-muted"
-          >
+        {registerLink && (
+          <Form.Text onClick={onRegisterClick} className="text-muted">
             Register
           </Form.Text>
         )}
