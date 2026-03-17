@@ -2,8 +2,9 @@ import { useContext } from 'react';
 import { Userform } from '../Userform';
 import { AuthContext } from '../../store/auth-context';
 import { useNavigate } from 'react-router-dom';
+import type { User } from '../../types/user';
 
-function Register({ loadUser }) {
+function Register({ loadUser }: { loadUser: (user: User) => void }) {
   const {
     formInputData,
     responseText,

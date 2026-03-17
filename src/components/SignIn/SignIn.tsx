@@ -2,8 +2,9 @@ import { useContext } from 'react';
 import { Userform } from '../Userform';
 import { AuthContext } from '../../store/auth-context';
 import { useNavigate } from 'react-router-dom';
+import type { User } from '../../types/user';
 
-function SignIn({ loadUser }) {
+function SignIn({ loadUser }: { loadUser: (user: User) => void }) {
   const {
     formInputData,
     responseText,
@@ -11,7 +12,7 @@ function SignIn({ loadUser }) {
     handleInputChange,
     submitForm,
   } = useContext(AuthContext);
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <Userform
@@ -33,8 +34,10 @@ function SignIn({ loadUser }) {
         },
       ]}
       responseText={loading ? 'Checking your info...' : responseText}
+      onRegisterClick={() => navigate('/register')}
       onSubmitFunction={() => submitForm('signin', loadUser, navigate)}
       buttonTitle={'Sign In'}
+      registerLink={true}
     />
   );
 }

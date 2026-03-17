@@ -1,25 +1,7 @@
-import { createContext, Dispatch, SetStateAction, useState } from 'react';
+import { createContext, useState } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import type { User } from '../types/user';
-
-type FormInputDataType = {
-  [prop: string]: string;
-};
-
-type AuthContextType = {
-  formInputData: FormInputDataType;
-  responseText: string;
-  setResponseText: Dispatch<SetStateAction<string>>;
-  loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
-  handleInputChange: (fieldName: string) => void;
-  submitForm: (
-    formType: 'register' | 'signin',
-    loadUser: (user: User) => void,
-    navigate: NavigateFunction
-  ) => void;
-  resetForm: () => void;
-};
+import { FormInputDataType, AuthContextType } from '../types/auth';
 
 export const AuthContext = createContext<AuthContextType>({
   formInputData: {},
@@ -27,7 +9,7 @@ export const AuthContext = createContext<AuthContextType>({
   setResponseText: () => {},
   loading: false,
   setLoading: () => {},
-  handleInputChange: () => {},
+  handleInputChange: () => () => {},
   submitForm: () => {},
   resetForm: () => {},
 });
