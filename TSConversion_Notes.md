@@ -688,7 +688,8 @@ type SignInBody = {
   password: string;
 }
 ```
-Then assin a union of those 2 types to `body`:
+
+Then assign a union of those 2 types to `body`:
 
 ```typescript
 const body: RegisterBody | SignInBody = {
@@ -1259,6 +1260,128 @@ onChange={handleInputChange('email')}
 ### Key Learning
 
 -
+
+### Open Questions
+
+- 
+
+
+## Register.tsx - [Mar 16 - 17, 2026]
+
+### Problems Found
+
+#### Userform Import Error
+
+- The following import statement was not picking up the function exported from Userform.tsx, and re-exported via a barrel file.
+
+  ```javascript
+  import { Userform } from '../Userform';
+  ```
+
+ In index.js (adjacent to Userform.tsx, in /src/Userform):
+
+  ```javascript
+  import Userform from './Userform';
+
+  export {Userform};
+  ```
+  
+  Here's the error back in Register.tsx:
+
+  ```console
+  Could not find a declaration file for module '../Userform'. '/Users/stephenpritchard/Developer/Projects/conjugation-refactor/conjugation_frontend/src/components/Userform/index.js' implicitly has an 'any' type.
+  ```
+
+#### `onChange` property type
+
+- Having already defined the type of the `formGroup` object in *Userform.tsx* as `FormGroupType`, there is now a type error stemming from the assignment of the `handleInputChange` method to the `onChange` property. Here's an example in *Register.tsx*:
+
+  ```typescript
+  {
+    controlId: 'formBasicName',
+    type: 'text',
+    placeholder: 'Enter name',
+    onChange: handleInputChange('name'),
+    value: formInputData.name,
+  }
+  ```
+
+  For reference, here's the definition of `FormGroupType`:
+
+  ```typescript
+  type FormGroupType = {
+    controlId: 'formBasicName' | 'formBasicEmail' | 'formBasicPassword';
+    type: 'text' | 'email' | 'password';
+    placeholder: string;
+    onChange: () => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    value: string;
+  };
+  ```
+
+  As mentioned in my note from 12 March, my attempt to assign `(fieldName: string) => void` also caused an error because TypeScript expected `onChange` to have a type analagous to `ChangeEventHandler<FormControlElement>` due to the `FormControlProps.onChange` from the FormGroup type definition file.
+
+### Research
+
+#### `onChange` property type
+
+- There is an [article](https://www.xjavascript.com/blog/typescript-input-onchange-event-type/) that demonstrates the use of an arrow function (which accepts the 'extra' argument) that returns another arrow function (which receives the event object). This pattern allows the type definition of a change handler function that receives an argument.
+While I am able to successfully use this pattern to give a more specific type to `handleInputChange` in `authContext`:
+
+  ```typescript
+  type AuthContextType = {
+    // ...
+    handleInputChange: (
+      fieldName: string
+    ) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    // ...
+  }
+  ```
+
+...I must still adjust the current type set to `onChange` in `FormGroupType`.
+
+### Solution
+
+#### Change barrel file extension from .js to .ts
+
+- simply changing the barrel file to a typescript file allows the type information to be preserved (via the barrel file) and read where it is imported in Register.tsx
+
+#### `onChange` property type
+
+This problem was actually a combination of two issues (one that I was focused on, another that I missed):
+
+ 1. `(event: React.ChangeEvent<HTMLInputElement>) => void` is the type that conforms to the expected `React.ChangeEventHandler<FormControlElement>;` type for `Form.Control.onChange`. This the type that matches the value that I had assigned - as props from Register.tsx` - to Userform's formGroup[]'s onChange property.
+ I thought that `handleInputChange('name')` was an assignment of the function reference but I was actually assigning the return value - which is `(event: React.ChangeEvent<HTMLInputElement>) => void` so I was close! More on this in 'Key Learning' below.
+
+ 2. The other issue was that I had not made Userform's `registerLink` and `onRegisterClick` props optional, and that this was highlighted in a separate error message that I did not read properly and *assumed* that it was related to the above issue.
+
+### Key Learning
+
+**Function Calls vs References in TypeScript:**
+
+When assigning a function's return value (not the function itself), the type is the return type, not the function type.
+```typescript
+// Function reference (not called)
+const ref = handleInputChange;
+// Type: (fieldName: string) => (event: ...) => void
+
+// Function return value (called)
+const val = handleInputChange('name');
+// Type: (event: ...) => void
+```
+
+**Applied to curried event handlers:**
+```typescript
+// In object
+onChange: handleInputChange('name')
+//        ^^^^^^^^^^^^^^^^^^^^^^^^^ Calling it
+//        Type: what it RETURNS (inner function)
+
+// So FormGroupType.onChange should match the inner function type
+onChange: (event: React.ChangeEvent) => void
+```
+
+**Error Message Priority:**
+When TypeScript shows multiple errors, fix the simple/obvious ones first (missing props) before diving into complex ones (type mismatches). Sometimes the simple fix resolves or clarifies the complex issue.
 
 ### Open Questions
 

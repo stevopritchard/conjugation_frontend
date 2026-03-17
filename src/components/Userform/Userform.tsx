@@ -2,14 +2,7 @@ import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import FormGroup from 'react-bootstrap/FormGroup';
-
-type FormGroupType = {
-  controlId: 'formBasicName' | 'formBasicEmail' | 'formBasicPassword';
-  type: 'text' | 'email' | 'password';
-  placeholder: string;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  value: string;
-};
+import type { FormGroupType } from '../../types/auth';
 
 function Userform({
   cardTitle,
@@ -24,9 +17,9 @@ function Userform({
   formGroup: FormGroupType[];
   onSubmitFunction: () => void;
   responseText: string;
-  registerLink: boolean;
+  registerLink?: boolean;
   buttonTitle: 'Register' | 'Sign-in';
-  onRegisterClick: () => void;
+  onRegisterClick?: () => void;
 }) {
   return (
     <Card style={{ margin: '0 auto' }}>
