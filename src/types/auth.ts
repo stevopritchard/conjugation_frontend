@@ -13,12 +13,12 @@ export type AuthContextType = {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   handleInputChange: (
-    fieldName: string
+    fieldName: string,
   ) => (event: React.ChangeEvent<HTMLInputElement>) => void;
   submitForm: (
     formType: 'register' | 'signin',
     loadUser: (user: User) => void,
-    navigate: NavigateFunction
+    navigate: NavigateFunction,
   ) => void;
   resetForm: () => void;
 };

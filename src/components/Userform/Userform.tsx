@@ -18,7 +18,7 @@ function Userform({
   onSubmitFunction: () => void;
   responseText: string;
   registerLink?: boolean;
-  buttonTitle: 'Register' | 'Sign-in';
+  buttonTitle: 'Register' | 'Sign In';
   onRegisterClick?: () => void;
 }) {
   return (
