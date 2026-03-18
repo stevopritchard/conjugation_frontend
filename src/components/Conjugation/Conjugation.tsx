@@ -6,7 +6,7 @@ import VerbTable from '../VerbTable/VerbTable';
 import './Conjugation.css';
 import { ConjugationContext } from '../../store/conjugation-context';
 
-function Conjugation({ id }) {
+function Conjugation({ id }: { id: number }) {
   const {
     favourites,
     conjugation,
@@ -18,10 +18,10 @@ function Conjugation({ id }) {
   const [isFavourite, setIsFavourite] = useState(false);
 
   const checkFavourites = useCallback(
-    function checkFavourites(verb) {
+    function checkFavourites(verb: string) {
       return conjugation.infinitive === verb;
     },
-    [conjugation.infinitive]
+    [conjugation.infinitive],
   );
 
   useEffect(() => {
@@ -32,17 +32,26 @@ function Conjugation({ id }) {
         id: id,
       }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to check favourites');
+        }
+        return response.json();
+      })
       .then((favouritesList) => {
-        if (favourites !== null) {
-          favouritesList.some(checkFavourites)
-            ? setIsFavourite(true)
-            : setIsFavourite(false);
+        const isFav = favouritesList.some(checkFavourites);
+        setIsFavourite(isFav);
+      })
+      .catch((err) => {
+        if (err instanceof Error) {
+          console.log(err.message);
+        } else {
+          console.log(`Unexpected error: ${err}`);
         }
       });
   }, [id, favourites, checkFavourites]);
 
-  function makeFavourite(verb, id) {
+  function makeFavourite(verb: string, id: number) {
     if (isFavourite === true) {
       setIsFavourite(false);
       removeFavourite(verb, id);
