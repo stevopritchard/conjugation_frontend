@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Question from '../../components/Question/Question';
 import quizReducer from '../../store/quiz-reducer';
 import './Practise.css';
+import { QuizActionKind } from '../../store/quiz-reducer';
 
 function Practise() {
   const [conjugation, setConjugation] = useState({});
@@ -58,12 +59,12 @@ function Practise() {
       .catch((error) => setErrorText(error.message));
   }
 
-  function startTest(selection) {
+  function startTest(selection: boolean) {
     let { selectedTenses } = quizReducerState;
-    if (selection === true) {
+    if (selection) {
       if (selectedTenses.length > 0) {
         quizDispatch({
-          type: 'START_TEST',
+          type: QuizActionKind.START_TEST,
         });
         setTestCounter((prevTestCounter) => {
           return prevTestCounter + 1;
@@ -72,35 +73,35 @@ function Practise() {
       }
       return;
     }
-    if (selection === false) {
+    if (!selection) {
       quizDispatch({
-        type: 'STOP_TEST',
+        type: QuizActionKind.STOP_TEST,
       });
     }
   }
 
-  function selectTense(e) {
+  function selectTense(e: React.ChangeEvent<HTMLInputElement>) {
     quizDispatch({
-      type: 'SELECT_TENSES',
+      type: QuizActionKind.SELECT_TENSES,
       payload: e.target,
     });
   }
 
-  function setQuestions(e) {
+  function setQuestions(e: React.ChangeEvent<HTMLInputElement>) {
     quizDispatch({
-      type: 'SET_QUIZ_LENGTH',
-      payload: e.target.value,
+      type: QuizActionKind.SET_QUIZ_LENGTH,
+      payload: parseInt(e.target.value),
     });
   }
 
-  function nextQuestion(answer) {
+  function nextQuestion(answer: number) {
     quizDispatch({
-      type: 'UPDATE_SCORE',
+      type: QuizActionKind.UPDATE_SCORE,
       payload: answer,
     });
     if (quizReducerState.currentQuestion < quizReducerState.totalQuestions) {
       quizDispatch({
-        type: 'NEXT_QUESTION',
+        type: QuizActionKind.NEXT_QUESTION,
       });
       getVerbs();
     } else {
@@ -217,7 +218,9 @@ function Practise() {
                 min="1"
                 max="10"
                 step="1"
-                onChange={(e) => setQuestions(e)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setQuestions(e)
+                }
               />
             </Form.Group>
             <p

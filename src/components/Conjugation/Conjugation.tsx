@@ -52,7 +52,7 @@ function Conjugation({ id }: { id: number }) {
   }, [id, favourites, checkFavourites]);
 
   function makeFavourite(verb: string, id: number) {
-    if (isFavourite === true) {
+    if (isFavourite) {
       setIsFavourite(false);
       removeFavourite(verb, id);
     } else {
