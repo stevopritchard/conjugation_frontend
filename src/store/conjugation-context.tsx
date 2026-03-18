@@ -48,11 +48,11 @@ export type ConjugationContextType = {
   verbSelected: boolean;
   conjugation: ConjugationType;
   responseText: string;
-  listFavourites: (id: string) => Promise<void>;
-  searchVerbs: (id: string) => void;
+  listFavourites: (id: number) => Promise<void>;
+  searchVerbs: (id: number) => void;
   verbSelection: (selection: boolean, verb: string) => void;
-  addFavourite: (verb: string, id: string) => Promise<void>;
-  removeFavourite: (verb: string, id: string) => Promise<void>;
+  addFavourite: (verb: string, id: number) => Promise<void>;
+  removeFavourite: (verb: string, id: number) => Promise<void>;
 };
 
 export const ConjugationContext = createContext<ConjugationContextType>({
@@ -63,11 +63,11 @@ export const ConjugationContext = createContext<ConjugationContextType>({
   conjugation: INITIAL_CONJUGATION,
   responseText: '',
   // using underscore to denote 'intentionally unused' to prevent linter warnings
-  listFavourites: (_id: string) => Promise.resolve(),
-  searchVerbs: (_id: string) => {},
+  listFavourites: (_id: number) => Promise.resolve(),
+  searchVerbs: (_id: number) => {},
   verbSelection: (_selection: boolean, _verb: string) => {},
-  addFavourite: async (_verb: string, _id: string) => {},
-  removeFavourite: async (_verb: string, _id: string) => {},
+  addFavourite: async (_verb: string, _id: number) => {},
+  removeFavourite: async (_verb: string, _id: number) => {},
 });
 
 export default function ConjugationContextProvider({
@@ -82,7 +82,7 @@ export default function ConjugationContextProvider({
   const [conjugation, setConjugation] = useState(INITIAL_CONJUGATION);
   const [responseText, setResponseText] = useState('');
 
-  const listFavourites = useCallback(async function listFavourites(id: string) {
+  const listFavourites = useCallback(async function listFavourites(id: number) {
     try {
       const response = await fetch(
         'http://localhost:3001/api/check_favourite',
@@ -90,7 +90,7 @@ export default function ConjugationContextProvider({
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -111,7 +111,7 @@ export default function ConjugationContextProvider({
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ infinitive }),
-        }).then((res) => res.json())
+        }).then((res) => res.json()),
       );
 
       const verbs: favouriteVerbType[] = await Promise.all(verbPromises);
@@ -127,7 +127,7 @@ export default function ConjugationContextProvider({
     }
   }, []);
 
-  function searchVerbs(id: string) {
+  function searchVerbs(id: number) {
     setVerbSelected(false);
     if (searchfield !== '') {
       fetch('http://localhost:3001/api/verb/search', {
@@ -228,7 +228,7 @@ export default function ConjugationContextProvider({
     }
   }
 
-  async function addFavourite(verb: string, id: string) {
+  async function addFavourite(verb: string, id: number) {
     try {
       const response = await fetch('http://localhost:3001/api/add_favourite', {
         method: 'post',
@@ -248,7 +248,7 @@ export default function ConjugationContextProvider({
     }
   }
 
-  async function removeFavourite(verb: string, id: string) {
+  async function removeFavourite(verb: string, id: number) {
     try {
       const response = await fetch(
         'http://localhost:3001/api/remove_favourite',
@@ -256,7 +256,7 @@ export default function ConjugationContextProvider({
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ infinitive: verb, id }),
-        }
+        },
       );
 
       if (!response.ok) throw new Error('Failed to add favorite');
