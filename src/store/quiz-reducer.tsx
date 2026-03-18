@@ -1,4 +1,4 @@
-enum QuizActionKind {
+export enum QuizActionKind {
   SET_QUIZ_LENGTH = 'SET_QUIZ_LENGTH',
   SELECT_TENSES = 'SELECT_TENSES',
   START_TEST = 'START_TEST',
@@ -56,7 +56,7 @@ interface QuizReducerState {
 
 export default function quizReducer(
   state: QuizReducerState,
-  action: QuizAction
+  action: QuizAction,
 ) {
   switch (action.type) {
     case QuizActionKind.SET_QUIZ_LENGTH:
@@ -75,7 +75,7 @@ export default function quizReducer(
         return {
           ...state,
           selectedTenses: state.selectedTenses.filter(
-            (tense) => tense !== action.payload.id
+            (tense) => tense !== action.payload.id,
           ),
         };
       }
