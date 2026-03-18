@@ -6,7 +6,7 @@ import CardList from '../../components/CardList/CardList';
 import { Conjugation } from '../../components/Conjugation';
 import './Reference.css';
 
-function Reference({ id }) {
+function Reference({ id }: { id: number }) {
   const {
     setSearchfield,
     filteredVerbs,
@@ -20,7 +20,7 @@ function Reference({ id }) {
     listFavourites(id);
   }, [listFavourites, id]);
 
-  function changeOnSearch(event) {
+  function changeOnSearch(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchfield(event.target.value.toLowerCase());
   }
 
@@ -30,7 +30,7 @@ function Reference({ id }) {
         searchChange={changeOnSearch}
         filterVerbs={() => searchVerbs(id)}
       />
-      {verbSelected === true ? (
+      {verbSelected ? (
         <Conjugation id={id} />
       ) : (
         <Scroll>
