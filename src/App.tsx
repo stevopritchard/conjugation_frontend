@@ -12,21 +12,22 @@ import { Register } from './components/Register';
 import AuthContextProvider from './store/auth-context';
 import ConjugationContextProvider from './store/conjugation-context';
 import './App.css';
+import type { User } from './types/user';
 
 const initialUserState = {
-  id: '',
+  id: 0,
   name: '',
   email: '',
-  favourites: [],
+  favourites: [] as string[],
   joined: '',
 };
 
 function App() {
   const [user, setUser] = useState(initialUserState);
 
-  function loadUser(user) {
+  function loadUser(user: User) {
     setUser({
-      id: user.id,
+      id: typeof user.id === 'string' ? parseInt(user.id, 10) : user.id,
       name: user.name,
       email: user.email,
       favourites: user.favourites,
@@ -57,7 +58,7 @@ function App() {
               path: '/',
               element: user.id ? (
                 <ConjugationContextProvider>
-                  <Reference id={user.id} favourites={user.favourites} />
+                  <Reference id={user.id} />
                 </ConjugationContextProvider>
               ) : (
                 <Navigate to="/signin" replace />
@@ -67,7 +68,7 @@ function App() {
               path: '/reference',
               element: user.id ? (
                 <ConjugationContextProvider>
-                  <Reference id={user.id} favourites={user.favourites} />
+                  <Reference id={user.id} />
                 </ConjugationContextProvider>
               ) : (
                 <Navigate to="/signin" replace />
@@ -84,7 +85,7 @@ function App() {
           ],
         },
       ]),
-    [user]
+    [user],
   );
 
   return (

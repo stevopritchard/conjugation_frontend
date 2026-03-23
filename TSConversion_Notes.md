@@ -11,15 +11,16 @@
   - [ ] Investigate timing dependency in searchVerbs - why does awaiting listFavourites cause sticky searches?
   - [ ] Consider refactoring searchVerbs to be properly async
 - [x] quiz-reducer.jsx
-- [ ] Conjugation.jsx
+- [x] Conjugation.jsx
 - [x] Header.js
 - [x] RootLayout.jsx
-- [ ] Question.jsx
-- [ ] Register.jsx / Signin.jsx / Userform.jsx
-- [ ] VerbTable.jsx
-- [ ] RootLayout.jsx
-- [ ] Reference.jsx
-- [ ] Practise.jsx
+- [x] Question.jsx
+- [x] Register.jsx / Signin.jsx / Userform.jsx
+- [x] VerbTable.jsx
+- [x] RootLayout.jsx
+- [x] Reference.jsx
+- [x] Practise.jsx
+- [x] App.js
 
 # Outstanding TODOs
 
@@ -1382,6 +1383,89 @@ onChange: (event: React.ChangeEvent) => void
 
 **Error Message Priority:**
 When TypeScript shows multiple errors, fix the simple/obvious ones first (missing props) before diving into complex ones (type mismatches). Sometimes the simple fix resolves or clarifies the complex issue.
+
+### Open Questions
+
+- 
+
+## Practise.tsx - [Mar 18, 2026]
+
+### Problems Found
+
+#### Union Types Don't Auto-Narrow
+
+FormControlElement is a union (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement), but function expects specific type.
+
+**Why TypeScript doesn't allow:**
+
+```typescript
+// onChange gives: ChangeEvent
+onChange={(e) => setQuestions(e)}
+
+// But setQuestions expects: ChangeEvent
+function setQuestions(e: ChangeEvent) { }
+```
+
+### Research
+
+### Solution
+
+#### Union Types Don't Auto-Narrow
+
+```typescript
+onChange={(e: ChangeEvent) => setQuestions(e)}
+//         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Narrow the union
+```
+
+**This is safe when:**
+- You know the specific type (e.g., `type="range"` makes it an input)
+- React Bootstrap's union is overly broad for your use case
+
+**Key Concept:**
+Union types are permissive on input (accept any member) but strict on usage (must narrow before accessing type-specific properties).
+
+### Key Learning
+
+### Open Questions
+
+- 
+
+## App.tsx - [Mar 20, 2026]
+
+### Problems Found
+
+1. **never[] inference for favourites array**
+   TypeScript inferred empty array as `never[]` instead of `string[]`
+
+2. **User.id type inconsistency**
+   - API returns id as string (JSON serialization)
+   - Components expect id as number
+   - Needed to convert at every usage point
+
+### Research
+
+- Reviewed [article](https://dbiswas.com/blog/typescript-never-array/) on never[] inference (article first referenced in `auth-context` conversion) 
+- Identified conversion should happen at API boundary, not at every usage
+
+### Solution
+
+1. **favourites type assertion:**
+```typescript
+   favourites: [] as string[]
+```
+
+2. **User.id conversion at boundary:**
+   - Changed User type: `id: number` (semantic type)
+   - Convert once in loadUser: `id: parseInt(user.id, 10)`
+   - Updated initialUserState: `id: 0`
+   - Components now receive correct type without conversion
+
+### Key Learning
+
+**Data transformation belongs at boundaries:**
+- Convert API types to app types when data enters system
+- Don't scatter conversions throughout codebase
+- Type system should represent semantic meaning, not wire format
 
 ### Open Questions
 
