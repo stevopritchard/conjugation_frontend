@@ -20,7 +20,7 @@
 - [x] RootLayout.jsx
 - [x] Reference.jsx
 - [x] Practise.jsx
-- [ ] App.js
+- [x] App.js
 
 # Outstanding TODOs
 
