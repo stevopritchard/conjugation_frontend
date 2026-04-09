@@ -2,7 +2,7 @@
 
 - [x] auth-context.tsx - First pass complete
   - [x] Refactor body building (remove unnecessary initialization)
-  - [ ] Add validation helper function (email/password format)
+  - [x] Add validation helper function (email/password format)
   - [ ] Ensure validation exists server-side (check backend routes)
 - [x] conjugation-context.tsx
   - [x] Extract conjugation types to src/types/conjugation.ts
@@ -26,7 +26,7 @@
 
 ## auth-context.tsx
 - [x] Create proper `User` type instead of `{}`
-- [ ] Review whether `Record<string, string>` for `body` is appropriate
+- [x] Review whether `Record<string, string>` for `body` is appropriate
 - [x] Apply User type consistently once created
 
 ## conjugation-context.tsx

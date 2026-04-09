@@ -48,13 +48,6 @@ export default function AuthContextProvider({
   function handleInputChange(fieldName: string) {
     return function (event: React.ChangeEvent<HTMLInputElement>) {
       const { value } = event.target;
-      if (fieldName === 'email') {
-        if (!validateEmail(value)) {
-          setResponseText('Please enter a valid email');
-        } else {
-          setResponseText('');
-        }
-      }
       setFormInputData((prevState) => ({
         ...prevState,
         [fieldName]: value,
@@ -65,6 +58,13 @@ export default function AuthContextProvider({
   function handleInputBlur(fieldName: string) {
     return function (event: React.ChangeEvent<HTMLInputElement>) {
       const { value } = event.target;
+      if (fieldName === 'email') {
+        if (!validateEmail(value)) {
+          setResponseText('Please enter a valid email');
+        } else {
+          setResponseText('');
+        }
+      }
       if (fieldName === 'password') {
         if (!validatePassword(value)) {
           setResponseText('You must enter a valid password');
@@ -103,9 +103,6 @@ export default function AuthContextProvider({
       {} as Record<(typeof config.fields)[number], string>,
     );
 
-    // config.fields.forEach((field) => {
-    //   body[field] = formInputData[field];
-    // });
     const errorType = config.errorMessage;
     fetch(`http://localhost:3001/api/auth${config.endpoint}`, {
       method: 'post',
