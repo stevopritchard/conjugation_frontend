@@ -3,6 +3,23 @@ import { NavigateFunction } from 'react-router-dom';
 import type { User } from '../types/user';
 import { FormInputDataType, AuthContextType } from '../types/auth';
 
+const validateEmail = (email: string) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    );
+};
+
+const validatePassword = (password: string) => {
+  const hasCapital = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  const longEnough = password.length >= 8;
+
+  return hasCapital && hasNumber && hasSpecial && longEnough;
+};
+
 export const AuthContext = createContext<AuthContextType>({
   formInputData: {},
   responseText: '',
@@ -12,6 +29,7 @@ export const AuthContext = createContext<AuthContextType>({
   handleInputChange: () => () => {},
   submitForm: () => {},
   resetForm: () => {},
+  handleInputBlur: () => () => {},
 });
 
 export default function AuthContextProvider({
@@ -30,10 +48,30 @@ export default function AuthContextProvider({
   function handleInputChange(fieldName: string) {
     return function (event: React.ChangeEvent<HTMLInputElement>) {
       const { value } = event.target;
+      if (fieldName === 'email') {
+        if (!validateEmail(value)) {
+          setResponseText('Please enter a valid email');
+        } else {
+          setResponseText('');
+        }
+      }
       setFormInputData((prevState) => ({
         ...prevState,
         [fieldName]: value,
       }));
+    };
+  }
+
+  function handleInputBlur(fieldName: string) {
+    return function (event: React.ChangeEvent<HTMLInputElement>) {
+      const { value } = event.target;
+      if (fieldName === 'password') {
+        if (!validatePassword(value)) {
+          setResponseText('You must enter a valid password');
+        } else {
+          setResponseText('');
+        }
+      }
     };
   }
 
@@ -53,17 +91,21 @@ export default function AuthContextProvider({
   function submitForm(
     formType: 'register' | 'signin',
     loadUser: (user: User) => void,
-    navigate: NavigateFunction
+    navigate: NavigateFunction,
   ) {
     const config = authConfig[formType];
-    const body = config.fields.reduce((acc, field) => {
-      acc[field] = formInputData[field];
-      return acc;
-    }, {} as Record<string, string>);
+    console.log(typeof config.fields);
+    const body = config.fields.reduce(
+      (acc, field) => {
+        acc[field] = formInputData[field];
+        return acc;
+      },
+      {} as Record<(typeof config.fields)[number], string>,
+    );
 
-    config.fields.forEach((field) => {
-      body[field] = formInputData[field];
-    });
+    // config.fields.forEach((field) => {
+    //   body[field] = formInputData[field];
+    // });
     const errorType = config.errorMessage;
     fetch(`http://localhost:3001/api/auth${config.endpoint}`, {
       method: 'post',
@@ -84,7 +126,7 @@ export default function AuthContextProvider({
             // NEED DIFFERENT MESSAGES FOR REGISTRATION & SIGNIN
             formType === 'register'
               ? `${errorType} failed - no user was created`
-              : `${errorType} failed - please check your credentials and try again`
+              : `${errorType} failed - please check your credentials and try again`,
           );
         }
         return response.json(); // Only parse if response was ok
@@ -121,6 +163,7 @@ export default function AuthContextProvider({
     handleInputChange: handleInputChange,
     submitForm: submitForm,
     resetForm: resetForm,
+    handleInputBlur: handleInputBlur,
   };
   return (
     <AuthContext.Provider value={authContextValue}>

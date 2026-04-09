@@ -33,6 +33,7 @@ function Userform({
                 placeholder={group.placeholder}
                 onChange={group.onChange}
                 value={group.value}
+                onBlur={group.onBlur}
               />
             </FormGroup>
           );

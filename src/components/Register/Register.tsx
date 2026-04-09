@@ -11,6 +11,7 @@ function Register({ loadUser }: { loadUser: (user: User) => void }) {
     loading,
     handleInputChange,
     submitForm,
+    handleInputBlur,
   } = useContext(AuthContext);
   let navigate = useNavigate();
 
@@ -24,6 +25,7 @@ function Register({ loadUser }: { loadUser: (user: User) => void }) {
           placeholder: 'Enter name',
           onChange: handleInputChange('name'),
           value: formInputData.name,
+          onBlur: handleInputBlur('name'),
         },
         {
           controlId: 'formBasicEmail',
@@ -31,6 +33,7 @@ function Register({ loadUser }: { loadUser: (user: User) => void }) {
           placeholder: 'Enter email',
           onChange: handleInputChange('email'),
           value: formInputData.email,
+          onBlur: handleInputBlur('name'),
         },
         {
           controlId: 'formBasicPassword',
@@ -38,6 +41,7 @@ function Register({ loadUser }: { loadUser: (user: User) => void }) {
           placeholder: 'Password',
           onChange: handleInputChange('password'),
           value: formInputData.password,
+          onBlur: handleInputBlur('name'),
         },
       ]}
       responseText={loading ? 'Checking your info...' : responseText}
