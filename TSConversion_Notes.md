@@ -1,8 +1,8 @@
 # Conversion Progress
 
 - [x] auth-context.tsx - First pass complete
-  - [ ] Refactor body building (remove unnecessary initialization)
-  - [ ] Add validation helper function (email/password format)
+  - [x] Refactor body building (remove unnecessary initialization)
+  - [x] Add validation helper function (email/password format)
   - [ ] Ensure validation exists server-side (check backend routes)
 - [x] conjugation-context.tsx
   - [x] Extract conjugation types to src/types/conjugation.ts
@@ -26,7 +26,7 @@
 
 ## auth-context.tsx
 - [x] Create proper `User` type instead of `{}`
-- [ ] Review whether `Record<string, string>` for `body` is appropriate
+- [x] Review whether `Record<string, string>` for `body` is appropriate
 - [x] Apply User type consistently once created
 
 ## conjugation-context.tsx
@@ -1470,3 +1470,96 @@ Union types are permissive on input (accept any member) but strict on usage (mus
 ### Open Questions
 
 - 
+
+## auth-context.tsx - [Apr 09, 2026]
+
+### Problems Found
+
+1. **duplicated body initialization**
+   `body` is initialised and constructed with the `field` array property's .`reduce()` method, and then again with the `forEach()` method on the same array:
+
+   ```typescript
+   const body = config.fields.reduce(
+      (acc, field) => {
+        acc[field] = formInputData[field];
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+   config.fields.forEach((field) => {
+      body[field] = formInputData[field];
+    });
+   ```
+
+2. **`Record<string, string>` for `body` is a loose type**
+   The type assigned to `body` allows for any string to be set as a key on the object, yet we know from the `config` variable declared in the `submitForm` function body that type of the key is union of `'name' | 'email' | 'password'`.
+
+### Research
+
+- In my first attempt to create a more robust type:
+
+  ```typescript
+  {
+    [key: 'name' | 'email' | 'password']: string
+  }
+  ```
+
+  Resulted the following error: `An index signature parameter type cannot be a literal type or generic type. Consider using a mapped object type instead`
+  After looking up [Mapped Types in the official documentation](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html) I attempted a different approach; `{} as AuthConfigFields<typeof config.fields>` where `AuthConfigFields` is defined as a mapped type:
+
+  ```typescript
+  type AuthConfigFields<Type> = {
+    [Property in keyof Type]: string;
+  };  
+  ```
+
+  However, this also failed because `typeof config.fields` is a tuple, and its keys are a sequence of 0-index integers (like an array), whereas the keys of body must be strings, hence a type mismatch at `acc[field] = formInputData[field];`
+
+### Solution
+
+1. **duplicated body initialization**
+  Simply remove the second initialisation.
+  The type was changed to replace the type of the keys with a static union:
+
+  ```typescript
+  const body = config.fields.reduce(
+      (acc, field) => {
+        acc[field] = formInputData[field];
+        return acc;
+      },
+      {} as Record<'name' | 'email' | 'password', string>,
+    );
+  ```
+
+2. **loose type for keys of `body`**
+  Use the `typeof` keyword to extract the tuple that is the type of the `config.fields` property. `[number]` says "give me the type you'd get if you indexed this tuple with any valid numeric index" — and since any element could be at a numeric position, you get the full union. So for readonly ['name', 'email', 'password'] it gives 'name' | 'email' | 'password'. 
+
+  ```typescript
+  const body = config.fields.reduce(
+    (acc, field) => {
+      acc[field] = formInputData[field];
+      return acc;
+    },
+    {} as Record<(typeof config.fields)[number], string>,
+  );
+  ```
+
+  One thing worth noting: because formType is 'register' | 'signin', TypeScript sees config.fields as potentially either tuple — so the union covers both, giving you 'name' | 'email' | 'password' in all cases. Signin technically allows a name key in the type. That's a known, acceptable limitation given this is an internal detail.
+   
+
+### Key Learning
+
+- Index signatures cannot use literal types. [key: 'name' | 'email'] is invalid. When you need an object type with specific known keys, use Record<K, V> or a mapped type instead.
+
+- Record<K, V> is a mapped type. It's not special syntax — it's shorthand for { [P in K]: V }. Understanding this means you can use Record with any valid key type, including unions.
+
+- keyof on a tuple gives indices, not values. keyof readonly ['name', 'email', 'password'] gives 0 | 1 | 2 | 'length' | 'map' | ... — the keys of the tuple as a data structure, not the string values stored in it.
+
+- T[number] extracts a union of element types from a tuple or array. This is an indexed access type — the type-level equivalent of bracket notation. It says "what type would I get if I indexed this with any number?" — giving you the full union of element types.
+
+- Types describe shapes at compile time; they don't track runtime execution. reduce runs at runtime, field by field. TypeScript doesn't follow that — it just checks that the types are compatible up front.
+
+### Open Questions
+
+- does `(typeof config.fields)[number]` stay correctly narrowed per formType (register vs signin), or does it always widen to the full union?

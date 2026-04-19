@@ -11,6 +11,7 @@ function SignIn({ loadUser }: { loadUser: (user: User) => void }) {
     loading,
     handleInputChange,
     submitForm,
+    handleInputBlur,
   } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -23,6 +24,7 @@ function SignIn({ loadUser }: { loadUser: (user: User) => void }) {
           type: 'email',
           placeholder: 'Enter email',
           onChange: handleInputChange('email'),
+          onBlur: handleInputBlur('email'),
           value: formInputData.email,
         },
         {
@@ -30,6 +32,7 @@ function SignIn({ loadUser }: { loadUser: (user: User) => void }) {
           type: 'password',
           placeholder: 'Password',
           onChange: handleInputChange('password'),
+          onBlur: handleInputBlur('password'),
           value: formInputData.password,
         },
       ]}

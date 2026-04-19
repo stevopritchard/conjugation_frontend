@@ -38,12 +38,12 @@ const Question = ({
 
   const forms = useMemo(
     () => Object.keys(conjugation).filter((form) => form !== 'infinitive'),
-    [conjugation]
+    [conjugation],
   );
 
   useEffect(() => {
     const randNum = Math.floor(Math.random() * forms.length);
-    var randomForm = forms[randNum];
+    const randomForm = forms[randNum];
     setCorrectForm(randomForm);
     setCorrectPronoun(PRONOUNS[randomForm]);
   }, [forms]);

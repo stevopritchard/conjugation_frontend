@@ -21,6 +21,10 @@ export type AuthContextType = {
     navigate: NavigateFunction,
   ) => void;
   resetForm: () => void;
+
+  handleInputBlur: (
+    fieldName: string,
+  ) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export type FormGroupType = {
@@ -28,5 +32,6 @@ export type FormGroupType = {
   type: 'text' | 'email' | 'password';
   placeholder: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: (event: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
 };

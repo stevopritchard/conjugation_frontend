@@ -380,3 +380,109 @@ _In order of the problems listed above in Problems Found_
 ### Notes
 
 - These changes were done at the suggestion of Claude, and after Claude reviewed my code (largely untouched in the refactor)
+
+## Auth Context (improvements) - [Mar 23, 2026]
+
+### Problems Found
+
+**no client-side validation of userform data**
+  The email and password entered by the user are not validated on the client-side.
+
+### Research
+
+-
+
+### Solution
+
+**Option 1 - validate input as user types:**
+```typescript
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      );
+  };
+  // ...
+  function handleInputChange(fieldName: string) {
+    return function (event: React.ChangeEvent<HTMLInputElement>) {
+      const { value } = event.target;
+      if (fieldName === 'email') {
+        if (!validateEmail(value)) {
+          setResponseText('Please enter a valid email');
+        } else {
+          setResponseText('');
+        }
+      }
+      setFormInputData((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
+    };
+  }
+```
+
+Less than ideal, because the user is prompted with an error message as soon as they begin to type in the affected input - before they can fulfill the validation criteria.
+
+2. **Option 2 - validate user input on blur**
+   
+This involves a more involved setup:
+  - a handler function in `auth-context.tsx` (_note: this is unfinished!_):
+    ```typescript
+    const validatePassword = (password: string) => {
+      const hasCapital = /[A-Z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecial = /[^A-Za-z0-9]/.test(password);
+      const longEnough = password.length >= 8;
+
+      return hasCapital && hasNumber && hasSpecial && longEnough;
+    };
+    // ...
+    function handleInputBlur(fieldName: string) {
+      return function (event: React.ChangeEvent<HTMLInputElement>) {
+        const { value } = event.target;
+        if (fieldName === 'password') {
+          if (!validatePassword(value)) {
+            setResponseText('You must enter a valid password');
+          } else {
+            setResponseText('');
+          }
+        }
+      };
+    }
+    ```
+  
+  - setting an `onBlur` prop on the `Form.Control` element generated from `formGroup` in `Userform.tsx`:
+  ```typescript
+    <Form.Control
+      type={group.type}
+      placeholder={group.placeholder}
+      onChange={group.onChange}
+      value={group.value}
+      onBlur={group.onBlur} // <= new prop
+    />
+  ```
+
+  - adding a new property that can be mapped from the `formGroup` prop value
+  ```typescript
+  formGroup={[
+    {
+      controlId: 'formBasicEmail',
+      type: 'email',
+      placeholder: 'Enter email',
+      onChange: handleInputChange('email'),
+      onBlur: handleInputBlur('email'), // <= new property
+      value: formInputData.email,
+    },
+    // ...
+  ]}
+  ```
+This is a better approach as it only prompts the user about an invalid attempt after they stop inputting a value to that input
+
+### Key Learning
+
+-
+
+### Open Questions
+
+- 

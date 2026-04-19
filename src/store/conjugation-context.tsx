@@ -127,39 +127,38 @@ export default function ConjugationContextProvider({
     }
   }, []);
 
-  function searchVerbs(id: number) {
+  async function searchVerbs(id: number) {
     setVerbSelected(false);
     if (searchfield !== '') {
-      fetch('http://localhost:3001/api/verb/search', {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          infinitive: searchfield,
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            if (response.status === 404) {
-              throw new Error('Verb endpoint not found');
-            }
-            if (response.status === 500) {
-              throw new Error('Server error, please try again');
-            }
-            throw new Error('Search failed');
-          }
-          return response.json();
-        })
-        .then((data) => setFilteredVerbs(data))
-        .catch((err) => {
-          if (err instanceof Error) {
-            console.error(err.message);
-          } else {
-            console.log(`An unexpected error occurred: ${err}`);
-          }
+      try {
+        const response = await fetch('http://localhost:3001/api/verb/search', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            infinitive: searchfield,
+          }),
         });
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Verb endpoint not found');
+          }
+          if (response.status === 500) {
+            throw new Error('Server error, please try again');
+          }
+          throw new Error('Search failed');
+        }
+        const data = await response.json();
+        setFilteredVerbs(data);
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error(err.message);
+        } else {
+          console.log(`An unexpected error occurred: ${err}`);
+        }
+      }
     } else {
       setFilteredVerbs([]);
-      listFavourites(id);
+      await listFavourites(id);
     }
   }
 
