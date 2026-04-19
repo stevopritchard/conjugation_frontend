@@ -94,7 +94,7 @@ export default function AuthContextProvider({
     navigate: NavigateFunction,
   ) {
     const config = authConfig[formType];
-    console.log(typeof config.fields);
+
     const body = config.fields.reduce(
       (acc, field) => {
         acc[field] = formInputData[field];
