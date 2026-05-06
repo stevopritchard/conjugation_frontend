@@ -8,7 +8,7 @@
   - [x] Extract conjugation types to src/types/conjugation.ts
   - [x] Create helper functions for empty conjugation forms
   - [x] Refactor default conjugation value to use helpers
-  - [ ] Investigate timing dependency in searchVerbs - why does awaiting listFavourites cause sticky searches?
+  - [x] Investigate timing dependency in searchVerbs - why does awaiting listFavourites cause sticky searches?
   - [ ] Consider refactoring searchVerbs to be properly async
 - [x] quiz-reducer.jsx
 - [x] Conjugation.jsx
