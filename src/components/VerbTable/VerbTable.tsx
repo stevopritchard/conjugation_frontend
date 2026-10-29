@@ -119,12 +119,12 @@ const VerbTable = () => {
           </tr>
         </tbody>
       </Table>
-      <h6>Impertiave</h6>
+      <h6>Imperative</h6>
       <Table>
         <thead>
           <tr>
             <th></th>
-            <th>Imperative Affimative</th>
+            <th>Imperative Affirmative</th>
             <th>Imperative Negative</th>
           </tr>
         </thead>

@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Scroll > should render a component with the className \`.scroll\` > 
+      <div
+        class="scroll"
+      />
+     1`] = `
+<DocumentFragment>
+  <div
+    class="scroll"
+  />
+</DocumentFragment>
+`;
+
+exports[`Scroll > should render a component with the className \`.scroll\` > 
+    <div
+      class="scroll"
+    /> 1`] = `
+<DocumentFragment>
+  <div
+    class="scroll"
+  />
+</DocumentFragment>
+`;
+
+exports[`Scroll > should render a div with the class \`.scroll\` > 
+      <div
+        class="scroll"
+      />
+     1`] = `
+<DocumentFragment>
+  <div
+    class="scroll"
+  />
+</DocumentFragment>
+`;

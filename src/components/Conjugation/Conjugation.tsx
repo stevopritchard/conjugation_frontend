@@ -33,6 +33,7 @@ function Conjugation({ id }: { id: number }) {
       }),
     })
       .then((response) => {
+        console.log(response);
         if (!response.ok) {
           throw new Error('Failed to check favourites');
         }
