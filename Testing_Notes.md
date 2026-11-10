@@ -549,7 +549,7 @@ const userformProps = {
 Type 'string' is not assignable to type '"Sign In" | "Sign Up"'.
 ```
 
-## Solution
+### Solution
 
 **Constant Types prevent type widening**
 By using `as const` the property type is set to the specific value assigned, instead of being widened.
@@ -564,3 +564,113 @@ const userformProps = {
 ```
 
 Now `cardTitle` and `buttonTitle` are *Constant Types* properties and are each typed `'Sign In'` instead of `string`, and therefore satisfy the constrainst of the union types.
+
+## Conjugation.test.tsx (29 Oct 2026)
+
+### Problem Found
+
+Tests on the rendered colour of the 'favourite' button cover a user-centric feature and fall in line with RTL's guidelines, yet the functionality requires that an array of verbs be assigned via **state**. State should not be handled in our tests, as they should avoid including implementation details.
+
+### Solution
+Instead, the browser fetch API can be mocked (via a global stub, as we do not need to track calls) to produce a pre-determined array of verbs that are part of a mocked resolved.
+
+```javascript
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(['prever', 'conjugar', 'recoger']),
+    }),
+  );
+
+```
+
+The component will take this resolved value from the stub and assign it to state as usual.
+
+## Conjugation.test.tsx (3 Nov 2026)
+
+### Problem Found
+
+While not outright preventing any tests from running, my initial setup of Conjugation.test.tsx resulted in the following warning in the console:
+
+```console
+  Warning: An update to Conjugation inside a test was not wrapped in act(...).
+
+  When testing, code that causes React state updates should be wrapped into act(...):
+
+  act(() => {
+    /* fire events that update state */
+  });
+  /* assert on the output */
+
+  This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+```
+
+## Conjugation.test.tsx (5 Nov 2026)
+
+### Problem Found
+
+I added an `aria-label` attribute of the "'favourit' button" element, so that I could select it in the assertion of my tests:
+
+```jsx
+  <i
+    aria-label="favourite"
+    className="fas fa-star"
+    style={starStyle}
+    onClick={() => makeFavourite(conjugation.infinitive, id)}
+  ></i>
+```
+
+However, the asserstion that I wrote was unable to find it: `expect(screen.getByRole('favourite').toBeInTheDocument();`
+
+### Solution
+
+RTL's docs are oftentimes not great at giving examples of the use of their APIs. I found this [question on Stack Overflow](https://stackoverflow.com/questions/63000516/how-to-getbyrole-a-button-with-image-in-react-testing-library) which answered how to query an element with an `aria-label`.
+
+The role, plus the aria-label, can be both be passed to the `getByRole()` method, with the aria-label's string value being passed to the `name` property on the `options` selector object:
+
+```javascript
+  expect(
+    screen.getByRole('generic', { name: 'favourite' }),
+  ).toBeInTheDocument();
+```
+## Conjugation.test.tsx (5 Nov 2026)
+
+### Problem Found
+After solving the problem above, I expected the correctly-resolved 'favourite' array would result in a successful test. 
+
+Instead, the test fails on this assertion:
+
+```typescript
+expect(screen.getByRole('generic', { name: 'favourite' })).toHaveStyle({
+  color: 'gold',
+});
+```
+
+The output in the terminal console informs us that:
+
+```console
+Error: expect(element).toHaveStyle()
+
+- Expected
++ Received
+
+- color: gold;
++ color: rgb(128, 128, 128);
+```
+
+### Solution
+The colour of the button suggests that by the time the test has run, the component has not triggered an update of its state and re-rendered in response to the update from the mocked fetch response.
+
+The examples that I had found regarding how to handle asynchronous mock fetch calls point towards assertions that test _whether or not the mocked resolves a value or has been called_ however I need to test for an update to my component after a lifecycle method recieves that resolved value, and I struggled to find a way to 'await' `useEffect()`. Hooks cannot be called or even referenced inside the test; they can only exist in the component scope.
+
+Then I looked on Stack Overflow and found the top-rated answer to
+[this question](https://stackoverflow.com/questions/76824340/how-do-i-make-the-test-wait-for-useeffects-update-to-be-called-first),which pointed me to an elegent solution; the `waitFor()` method (https://testing-library.com/docs/dom-testing-library/api-async/#waitfor). Using this, I could simply pass a falsy statement (my failing assertion) and RTL will wait for it to become truthy before completing the test:
+
+```typescript
+await waitFor(() => {
+  expect(screen.getByRole('generic', { name: 'favourite' })).toHaveStyle({
+    color: 'gold',
+  });
+});
+```

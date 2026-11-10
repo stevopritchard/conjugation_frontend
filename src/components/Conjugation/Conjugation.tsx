@@ -89,7 +89,9 @@ function Conjugation({ id }: { id: number }) {
             </Card.Subtitle>
           </Col>
           <Col xs={1} sm={1} md={1} xl={1} lg={1}>
+            {/* <i> tag used as per examples: https://fontawesome.com/v4/examples/ */}
             <i
+              aria-label="favourite"
               className="fas fa-star"
               style={starStyle}
               onClick={() => makeFavourite(conjugation.infinitive, id)}
